@@ -1,0 +1,412 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	*** Note 10: Application Routing ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+Elastic Load Balancer (ELB):
+
+ELB Load Balancer types in AWS:
+- Application LB (ALB or ELBv2)
+- Classic LB (ELBv1)
+- Network NLB
+- Gateway LB
+
+LoadBalancer Comparison: https://aws.amazon.com/elasticloadbalancing/features/#Product_comparisons
+- If you need flexible application management, we recommend that you use an Application Load Balancer.
+- For network/transport protocols (layer4 – TCP, UDP) load balancing, and for extreme performance/low latency applications we recommend using Network Load Balancer.
+- If you have an existing application that was built within the EC2-Classic network, then you should use a Classic Load Balancer.
+
+
+Application Load Balancer (ALB or ELBv2):
+- Region wide LB, IPv4 or dual-stack.
+- Layer 7 only.
+- Supports HTTP/2, WebSockets and gRPC.
+- Content based routing.
+- Supports Cross-Zone Load Balancing (see below).
+- « Request tracing » enabled by default.
+- Backend targets can be EC2, ECS, Lambda, or any IP address.
+- Target Groups:
+	- Targets are grouped in Target Groups.
+	- Target Groups are region-based.
+	- A target can belong to multiple target groups.
+	- An EC2 Auto Scaling group can belong to multiple target groups.
+- Listeners:
+	- Define port and protocol.
+	- Each instance can have up to 10 listeners.
+	- You can associate one or more target groups to a listener with a weighted distribution.
+- Rules: 
+	- Include conditions and corresponding actions if the conditions are satisfied. 
+	- Supported conditions are: Host header, URL Path, HTTP headers, methods, query parameters, and source IP CIDRs. 
+	- The supported actions are redirect, fixed response, authenticate, or forward. 
+	- You can attach a default rule to a listener.
+	- Can automatically do port mapping for containers.
+	- The default algorithm is round robin; alternatively, you can specify the least outstanding requests routing algorithm. 
+- Health checks (probes): HTTP(S). Supports custom HTTP response codes (200-499).
+- User authentication with native OIDC or with Amazon Cognito. Cognito enables Social identities, Enterprise IdP (SAML) or consolidation of multiple OpenID Connect IdPs.
+- Supports sessions Stickiness:
+	- Target stickiness: configured in the target group.
+	- Target Group stickiness: configured on the listener when you have multiple target groups. Can be set between 1 sec and 7 days.
+- Supports deletion protection.
+- Supports security groups.
+- Encryption:
+	- ALB supports HTTPS listeners for SSL/TLS offload.
+	- HTTPS listeners are created with exactly one certificate, known as the default certificate. 
+	- You can specify additional certificates in a certificate list.
+	- Supports Server Name Indication (SNI).
+	- Supports end-to-end encryption: traffic is re-encrypted between the ALB and the instances.
+	- Certificates can be stored in ACM or IAM.
+- Pricing based on hours and number of Loadbalancer Capacity Units (LCUs) used per hour.
+
+
+
+Classic LB:
+- Region wide load balancer.
+- Can be internal or external.
+- L4 and some L7 capabilities.
+- SSL offload.
+- Cookie-based sticky session.
+- Integrates with Auto Scaling.
+- Health checks (probes): HTTP(S)/TCP/SSL. For HTTP(S), supports only a response code of 200.
+- Integrates with CloudWatch for load balancing based on advanced metrics.
+- Supported ports: 25, 80, 443, 1024-65535. 
+- backend ports for a given service must be identical for all backend targets.
+- Does not support Elastic IPs, works only with DNS.
+- Integrates with Route 53.
+- Supports IPv4 and IPv6
+- Can log security to CloudTrail,
+- Only one SSL certificate per ELB: cannot have certificates for www.acme.com and app.acme.com on the same ELB.
+- Wildcard certificates are supported (*.acme.com).
+- By default, the load balancer distributes traffic evenly across the Availability Zones (unless you enable « cross-zone load balancing »).
+- Supports Connection Draining.
+- Billed based on the bandwidth and hourly usage.
+- Supports end-to-end encryption: traffic is re-encrypted between the LB and the instances.
+
+
+Network Load Balancer (NLB):
+- Layer 4 only LB (TCP/UDP),
+- Target types: IP, instance.
+- Can handle millions of requests per second,
+- Encryption:
+	- TLS/SSL offload at scale.
+	- Certificates from ACM or IAM.
+	- Supports end-to-end encryption: traffic is re-encrypted between the LB and the instances.
+- Selects a target using a flow hash algorithm based on the protocol, source IP address, source port, destination IP address, destination port, and for TCP, the TCP sequence number. 
+- Support for static IP addresses for the load balancer (one per AZ). You can also assign one Elastic IP address per subnet enabled for the load balancer. Supports BYOIP.
+- Support for registering targets by IP address, including targets outside the VPC for the load balancer.
+- Can automatically do port mapping for containers. 
+- Health checks at the target group level.
+- Active health checks:
+	- The load balancer periodically sends a request to each registered target to check its status.
+	- Support HTTP, HTTPS, and TCP.
+	- HTTP response code must be 200 to 399. 
+- Passive health checks:
+	- The load balancer observes how targets respond to connections.
+	- Supported on TCP only.
+	- You cannot disable, configure, or monitor passive health checks. 
+- Client IP preservation:
+	- When you specify targets by instance ID, the client IP of all incoming traffic is preserved and provided to your applications.
+	- When you specify targets by IP address, you can choose to enable or disable client IP preservation.
+- Supports deletion protection.
+- Supports Cross-Zone Load Balancing.
+- Does not support Security Groups.
+
+
+Gateway Load Balancer (GLB):
+- Layer 3 only LB,
+- enable you to deploy, scale, and manage virtual appliances, such as FWs, IPS and DPI systems.
+- Target types: IP, instance.
+- Exchanges traffic with backend targets using the GENEVE protocol,
+- Max MTU: 8500 bytes,
+- No SSL offload.
+- You deploy the GLB in the same VPC as the target virtual appliances. 
+- use Gateway Load Balancer endpoints to securely exchange traffic across VPC boundaries. 
+- Support deletion protection.
+- Supports Cross-Zone Load Balancing.
+
+ELB Cross-Region Load Balancing:
+- When you enable an Availability Zone for your load balancer, Elastic Load Balancer creates a load balancer node in the Availability Zone. 
+- With an ALB however, it is a requirement that you enable at least two AZs.
+- When clients send requests Amazon Route 53 responds to each request with the IP address of one of the load balancer nodes.
+- When cross-zone load balancing is disabled, each load balancer node distributes traffic only across the registered targets in its Availability Zone. 
+- When cross-zone load balancing is enabled, each load balancer node distributes traffic across the registered targets in all enabled Availability Zones. 
+- Pros:
+	- You get an even distribution of traffic across instances in all AZs.
+	- If all instances in one AZ fail, ELB does not need to remove the ELB node IP address from Route 53 (which can take time to propagate to clients).
+- Cons:
+	- You get charged for cross-AZ traffic.
+	- In case of NLB: You won't have micro-second latency with cross-AZ traffic.
+
+
+ELB with Auto Scaling Group:
+- You can attach the load balancer to your Auto Scaling group to register the group with the load balancer. 
+- Instances that are launched/terminated by your Auto Scaling group are automatically registered/deregistered with the load balancer. 
+- You can configure your Auto Scaling group to use ELB metrics such as the ALB request count per target (or other metrics) to scale the number of instances in the group.
+- You can also optionally enable Auto Scaling to replace instances based on health checks provided by the ELB.
+
+
+===============================
+
+API Gateway:
+- A service for creating, publishing, maintaining, monitoring, and securing APIs.
+- Supported API types: REST, HTTP, and WebSocket.
+- Authentication mechanisms:
+	- AWS IAM policies,
+	- Lambda authorizer function (takes the caller's identity as input and returns an IAM policy as output),
+	- Amazon Cognito user pools.
+	- OIDC and OAuth 2.0 (HTTP APIs only). 
+- Supports CORS.
+- Developer portal for publishing your APIs.
+- Integration with AWS WAF.
+- Throttling supported: 
+	- You can set the standard rates and burst rates.
+	- Server-side throttling limits are applied across all clients.
+	- Per-client throttling limits are applied to clients that use API keys associated with your usage policy as client identifier.
+- Caching:
+	- Supported on REST APIs only.
+	- You can specify its size and TTL.
+	- Max & Default TTL = 3600 s.
+- Compression (request & response) supported.
+- Can generate a client-side certificate to authenticate with the backend.
+- API endpoint:
+	- A hostname for an API in API Gateway that is deployed to a specific Region.
+	- The hostname is of the form {api-id}.execute-api.{region}.amazonaws.com.
+- Supported types of API endpoints: Edge-optimized, Private, Regional. 
+- Edge-optimized API endpoint:
+	- The default hostname of an API Gateway API that is deployed to the specified Region while using a CloudFront distribution to facilitate client access typically from across AWS Regions. 
+	- API requests are routed to the nearest CloudFront Point of Presence (POP), which typically improves connection time for geographically diverse clients. 
+- Private API endpoint:
+	- exposed through interface VPC endpoints and allows a client to securely access private API resources inside a VPC.
+	- Private APIs are isolated from the public internet, and they can only be accessed using VPC endpoints for API Gateway that have been granted access. 
+- Regional API endpoint:
+	- deployed to the specified Region and intended to serve clients, such as EC2 instances, in the same AWS Region.
+	- For in-Region requests, a Regional endpoint bypasses the unnecessary round trip to a CloudFront distribution. 
+
+
+===============================
+
+Route 53:
+- Worldwide distributed DNS with 100% SLA.
+- Is also a registrar for your domain name.
+- Has an API.
+- Can do server health checks.
+- Two types of zones: 
+	- Public hosted zone: visible on internet.
+	- Private hosted zone: used only from within your VPCs. You need to enable « DNS Resolution » and « DNS Hostnames » on the VPC.
+- Refer to the VPC notes for more information about the public and private hosted zones.
+- You can associate any DNS record type except SOA and NS records.
+
+Route 53 Records:
+- Can be traditional (non-alias) DNS records or AWS alias records.
+- To build routing policies you create multiple records of the same name and type and pointing to different IP addresses. Eg: { [ myrecordname => IP1, policy=weighted, weight=40 ], [ myrecordname => IP2, policy=weighted, weight=60 ] }.
+- You create a DNS record and then associate a health check with this record. 
+- Records without a health check are assumed always healthy.
+- Unhealthy records are removed from the routing algorithm.
+
+Route 53 Alias Records:
+- Provide a Route 53-specific extension to DNS functionality. 
+- Points either to:
+	- an AWS Service, such as CloudFront, S3, ELB, API Gateway, VPC interface endpoint, …etc.
+	- another record. Enables you to build complex trees of routing rules.
+- Target IPs are automatically maintained by Route 53.
+- "Evaluate Target Health" option:
+	- Indicates whether Route 53 should check the health of the target resource that this alias points to.
+	- You can set this option in both the case of target AWS service and the case of another record.
+	- Cannot be set when the Alias points to a CloudFront distribution.
+- Support Apex names.
+
+Route 53 Health Checks:
+- Optional construct that you can attach to a record.
+- Can monitor an Endpoint, Other Health Checks or a CloudWatch alarm state (a CloudWatch alarm can have a state of "OK", "In-Alarm" or "Insufficient data").
+- Can use TCP, HTTP or HTTPS probes. 
+- Can specify port and HTTP(S) path.
+- Endpoint:
+	- An element in the parameters of the health check. 
+	- can be an IP address or domain name. 
+	- not necessarily identical to the IP address of the DNS record. Eg: a record pointing to IP1 can be associated with a health check whose endpoint is IP2.
+- Health Checks Interval:
+	- Can be set to 30 seconds (Standard) or 10 seconds (Fast).
+	- Typically, around 15 health checkers from around the world send health checks to your resource.
+	- If you choose an interval of 30 seconds, your resource will receive a health check request about every two seconds.
+	- If you choose an interval of 10 seconds, your resource will receive a health check request more than once per seconds.
+- You can customize the health checkER regions.
+- Can search a string in the HTTP response body.
+- Can create an alarm to send notifications using Amazon SNS.
+- Integrates with ELBs: Route 53 creates and manages the health checks for your ELB automatically if the “Evaluate Target Health” is enabled.
+- Supports SNI.
+
+Route 53 Routing Policies:
+- Simple routing policy:
+	- Associates an A record with one or more IP addresses. 
+	- You can't use multiple records of the same name and type with simple routing. 
+	- However, a single record can contain multiple values (such as IP addresses). 
+	- In case of multiple IP addresses, the list is returned in a random order. 
+- Failover routing policy:
+	- Active-passive failover between a primary record and a secondary record. 
+	- Both can be single or multiple records.
+	- Route 53 does NOT respond to DNS queries using the secondary record until ALL primary records are unhealthy.
+	- A popular scenario for web sites is to have a failover policy to a static web site in S3.
+- Geolocation routing policy:
+	- Based on the location of your users: by continent, by country or by state (the latter for US only).
+	- Does not necessarily mean the best latency.
+- Geoproximity routing policy – Based also on the location of your users. Uses a geoproximity map that you can alter.
+- Latency routing policy:
+	- Based on latency between the user and the AWS data centers.
+	- AWS maintains a database of latencies from different parts of the world.
+- Multivalue answer routing policy – Responds to DNS queries with up to eight healthy records selected at random.
+- Weighted routing policy – Use to route traffic to multiple resources in proportions that you specify.
+
+Route 53 Traffic Flow:
+- A tool that greatly simplifies the process of creating and maintaining records in large and complex configurations.
+- Visual editor: The traffic flow visual editor lets you create complex trees of records and see the relationships among the records. 
+- Versioning: You can create multiple versions of a traffic policy so you don't have to start all over when your configuration changes. 
+- Automatic record creation and updating:
+	- A traffic policy can represent dozens or even hundreds of records. 
+	- Traffic flow lets you create all those records automatically by creating a traffic policy. 
+	- You specify the hosted zone and the name of the record at the root of the tree, such as example.com or www.example.com, and Route 53 automatically creates all the other records in the tree. 
+- The geoproximity routing policy is available only if you use Traffic Flow. 
+- There's a monthly charge for each traffic policy record. 
+
+Route 53 Resolver:
+- When you create a VPC, Route 53 Resolver automatically answers DNS queries for local VPC domain names for EC2 instances and for records in private hosted zones.
+- You also can integrate DNS resolution between the Route 53 Resolver and your DNS resolvers on your network by configuring forwarding rules.
+- Your "network" here can include: your VPC, peered VPCs, your on-premises networks connected via S2S VPN or Direct Connect.
+- Two use cases: inbound DNS requests and outbound DNS requests.
+- Inbound DNS requests:
+	- You create an "Inbound endpoint": DNS resolvers on your network can forward DNS queries to the Route 53 Resolver via this endpoint.
+	- This allows your DNS resolvers to easily resolve domain names for AWS resources such as EC2 instances or records in a Route 53 private hosted zone. 
+- Outbound DNS requests:
+	- You create an "Outbound endpoint": Resolver conditionally forwards queries to resolvers on your network via this endpoint.
+	- You create Resolver rules that specify the domain names for the DNS queries that you want to forward, and the IP addresses of the DNS resolvers on your network that you want to forward the queries to. 
+	- If a query matches multiple rules, Resolver chooses the rule with the most specific match.
+	- You can also forward queries for amazonaws.com to your network. This rule will not apply to all amazonaws.com subdomains.
+- For each endpoint, Resolver automatically creates a VPC elastic network interface with an IP address that you specify.
+- Like Amazon VPC, Resolver is regional. 
+
+DNS standard record types:
+- A: IPv4 address for a DNS name.
+- AAAA: IPv6 address for a DNS name.
+- CNAME: Alias (Canonical name)
+- MX: email
+- TXT
+- SRV
+- SPF: Sender Policy Framework: IP address of email gateway to avoid spoofing.
+- NS: name server record.
+- SOA: Start of authority.
+
+===============================
+
+AWS CloudFront
+- CDN using a global network of 225+ edge locations.
+- Two levels of edge locations:
+	- Point-Of-Presence (POP): close to the end user (low latency). 
+	- Regional Edge Caches: higher level cache. Have a much larger caching capacity than POPs. 
+- Supports static, dynamic, interactive and streaming content.
+- Common video formats are MPEG DASH, Apple HLS, Microsoft Smooth Streaming, and CMAF. 
+- Supports WebSockets also.
+- You create a CloudFront distribution to tell CloudFront how to distribute your content.
+- A Distribution defines:
+	- Delivery methods: Web, VoD, Live Streaming.
+	- You content origin: S3 bucket, EC2 and ELB or any HTTP service.
+	- Access: open or restricted.
+	- Security: HTTP or HTTPS.
+	- Cache key.
+	- Origin request settings: parameters of the request sent by CloudFront to your content origin. 
+	- Geo-restrictions: prevent users in selected countries from accessing your content. Can be an allow-list or a deny-list.
+- For RTMP distributions, you must store your content on S3.
+- Cache Key:
+	- Uniquely identifies each file in the cache for a given distribution. 
+	- Determines whether a viewer request results in a cache hit.
+	- Values included in the cache key can be HTTP request query strings, headers, and cookies. 
+	- By default CloudFront does not consider cookies nor headers. You can change this.
+- Origin Requests:
+	- These are the HTTP requests sent by CloudFront to the content origin when you have a cache miss.
+	- Even when you want to cache based on specified query parameters, CloudFront will forward the whole query string to the origin.
+	- All HTTP headers and cookies that you include in the cache key are also automatically included in origin requests. 
+	- CloudFront can add URL query parameters and HTTP headers to origin requests. Eg: CloudFront-Viewer-Country header.
+- Policies:
+	- control the cache key, the origin request and the HTTP headers.
+	- For origin requests, you can use managed policies, or you can create your own.
+- Cache expiration:
+	- By default, each file automatically expires after 24 hours.
+	- To change the cache duration for all files that match the same path pattern, you can change the CloudFront settings for Minimum TTL, Maximum TTL, and Default TTL.
+	- To change the cache duration for an individual file, you can configure your origin to add a Cache-Control max-age or Cache-Control s-maxage directive, or an Expires header field to the file.
+	- Cache-Control s-maxage directive: consumed by CloudFront only.
+	- Cache-Control max-age directive: consumed by the browser. Takes precedence on the « Expires » directive. Consumed also by CloudFront if « Cache-Control s-maxage » is not specified.
+	- In case both Maximum TTL and max-age are set, CloudFront caches objects for the lesser of the two values (AND operator). 
+- If you need to remove a file from CloudFront edge caches before it expires, you can do one of the following:
+	- Invalidate the file from edge caches. The next time a viewer requests the file, CloudFront returns to the origin to fetch the latest version of the file.
+	- Use file versioning to serve a different version of the file that has a different name. This is the recommended method.
+- Origin Failover capability: automatically serves content from a backup origin when the primary origin is unavailable. 
+- Origin Access Identity (OAI) feature: OAI is a special CloudFront user to which you grant access to your S3 bucket. You then deny direct access to your S3 bucket to all users except the OAI.
+- S3 bucket recommended access format: bucket-name.s3.region.amazonaws.com.
+- Restricting access to files in CloudFront:
+	- You can configure CloudFront to require that users access your files using either signed URLs or signed cookies.
+	- Uses RSA-SHA1 for signing URLs or cookies. 
+	- in the signed URL/cookie you can include the validity period of the access (start & end) and the valid IP addresses or range.
+	- Use signed cookies if you don't want to change your current URLs or to give selected users access to all files.
+	- Signed URLs take precedence over signed cookies. 
+	- The signed URL/cookie is created by your application. You need therefore to specify in CloudFront the "trusted key groups" or "trusted signers" that you want to use to create this signed URL/cookie. 
+- You can set up AWS WAF in front of CloudFront.
+- Price Class for edge locations:
+	- Default price class: all regions worldwide.
+	- Most regions class (excludes the most expensive regions like South America).
+	- Least expensive regions class: US, Canada and Europe.
+
+
+Domain Names and SSL Certificates:
+- When you create a web distribution, CloudFront assigns a domain name to the distribution, such as d111111abcdef8.cloudfront.net. 
+- If you want to use your own domain name, you can create a DNS record that points to your CloudFront distribution:
+	- if using Route 53, create a Route 53 Alias record.
+	- if using another DNS provider, create a CNAME record.
+- SSL Certificates:
+	- For the CloudFront domain name, you can use the default certificate.
+	- For custom domain names, you can use certificates from ACM or IAM. The certificate must be in the us-east-1 region (US East N. Virginia).
+- Supports Server Name Indication (SNI). Default and free option.
+
+
+AWS Lambda@Edge:
+- Run Lambda functions at the CloudFront locations.
+- Lets you execute functions that customize the content that CloudFront delivers. 
+- You can author Node.js or Python functions in one Region, US-East-1 (N. Virginia), and then execute them in AWS locations globally that are closer to the viewer, without provisioning or managing servers.
+- You can execute Lambda functions when the following CloudFront events occur:
+	- When CloudFront receives a request from a viewer (viewer request)
+	- Before CloudFront forwards a request to the origin (origin request)
+	- When CloudFront receives a response from the origin (origin response)
+	- Before CloudFront returns the response to the viewer (viewer response)
+
+
+CloudFront VOD:
+- To deliver video on demand (VOD) streaming with CloudFront, use the following services:
+	- An encoder (such as AWS Elemental MediaConvert) to transcode the video into streaming formats.
+	- Amazon S3 to store the content in its original format and to store the transcoded video.
+	- CloudFront to deliver the transcoded video to viewers. 
+- Transcode your content by using a MediaConvert job. The job converts your video into the formats required by the players that your viewers use.
+
+
+Live Streaming Video with CloudFront and AWS Media Services:
+- Use AWS Elemental MediaLive to encode live video streams in real time. 
+- After you compress a live video stream, you can use either of the following two main options to prepare and serve the content:
+	a- Convert your content into required formats, and then serve it. You can use AWS Elemental MediaPackage to package the content for different device types.
+	b- Store and serve your content using scalable origin: If MediaLive encoded content in the formats required by all of the devices that your viewers use, use a highly scalable origin like AWS Elemental MediaStore to serve the content. 
+
+
+

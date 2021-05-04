@@ -1,0 +1,522 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 04: Storage ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+Instance Storage types for EC2:
+- Instance Store: ephemeral
+- Elastic Bloc Store (EBS): GP-SSD (default), P-IOPS, HDD, …
+- Elastic File System (EFS): NAS.
+
+==================================
+
+Elastic Bloc Storage (EBS):
+- Provides storage volumes that are seen as iSCSI targets.
+- EBS volumes can be attached to your EC2 instances and seen as disks by the OS.
+- Does not need to be attached to an instance,
+- Cannot be attached to more than one instance,
+- Can be transferred between AZs.
+- EBS currently supports a maximum volume size of 16 TiB.
+- Volume size can be increased while attached.
+- Volumes are replicated in a single AZ,
+- Encryption supported with AWS KMS.
+- Snapshots supported.
+
+EBS Optimized Instances:
+- EBS-optimized instances are EC2 instances that have dedicated bandwidth to EBS.
+- Designed for use with all EBS volume types
+- not all EC2 instance types support EBS Optimization.
+- some EC2 instance types have EBS Optimization by default.
+- Up to 150 Gbps of bandwidth for certain instance types.
+- Additional hourly fee.
+
+EBS Snapshots:
+- You can create point-in-time snapshots of EBS volumes, which are persisted to Amazon S3 (but you don’t see them in your S3 bucket).
+- You can make a snapshot of an EBS volume or an EBS-backed EC2 instance.
+- The first snapshot is a complete copy of the volume to S3.
+- Subsequent snapshots are incremental: only the blocks on the device that have changed after your most recent snapshot are saved. 
+- When you delete a snapshot, only the data unique to that snapshot is removed. If you delete a snapshot containing data being used by a later snapshot, the referenced data is preserved. 
+- When creating a volume from a Snapshot, you can resize it.
+- Can be shared.
+- Can be copied across regions.
+- Encryption:
+	- Snapshots of encrypted volumes are automatically encrypted.
+	- Volumes created from encrypted snapshots are automatically encrypted.
+	- Volumes created from unencrypted snapshots can be encrypted on the fly.
+	- When you copy an unencrypted snapshot, you can encrypt it during the copy process.
+	- You can re-encrypt a snapshot with a different key.
+
+EBS Volume Types:
+- Provisioned IOPS (io1, io2, io2BE):
+	- SSD
+	- IOPS: 256K for io2BE, 64K for io1/io2. 64K is only achievable on Nitro instances. Other instances are capped to 32K IOPS. 
+	- 4,000 MB/s for io2BE, 1,000 MB/s for io1/io2
+	- You can provision from 100 IOPS up to 64,000 IOPS per volume on Nitro-based Instances and up to 32,000 on other instances. 
+	- maximum ratio of provisioned IOPS to volume size (in GiB) is 50:1 for io1 volumes, and 500:1 for io2 volumes. 
+- General Purpose (gp2, gp3):
+	- SSD
+	- 16K IOPS.
+	- 1,000 MB/s for gp3 and 250 MB/s for gp2.
+	- The performance of gp2 volumes is tied to volume size, which determines the baseline performance level of the volume and how quickly it accumulates I/O credits; larger volumes have higher baseline performance levels and accumulate I/O credits faster.
+- Throughput Optimized HDD (st1):
+	- HDD
+	- 500 IOPS
+	- 500 MB/s
+	- Cannot be used as boot drive
+- Cold HDD (sc1):
+	- HDD
+	- 250 IOPS
+	- 250 MB/s
+	- Cannot be used as boot drive
+- Magnetic:
+	- Previous generation HDD.
+	- 40-200 IOPS
+	- 90 MB/s
+
+==================================
+
+Elastic File System (EFS):
+- Simple, petabyte scalable NFS file storage for EC2 instances.
+- Protocol: NFS v4.
+- Elastic: automatically grows and strings as you add or remove files.
+- Stored redundantly across multiple AZs,
+- Can be accessed concurrently by 1000s of EC2 instances from different AZs.
+- On-premise supported via direct connect.
+- Encryption of data at rest and in transit are both supported.
+- Two Storage classes:
+	- Standard storage class: for frequently accessed files. Single-digit latencies on average.
+	- Infrequent Access (IA) storage class is a lower-cost storage class that's designed for storing long-lived, infrequently accessed files cost-effectively. Double-digit latencies on average.
+- Mount Targets:
+	- You mount your file system on an EC2 instance using a mount target that you create for the file system. 
+	- An EFS file system can only be attached to one single VPC at a time.
+	- You can create only one mount target per Availability Zone.
+- Lifecycle management: 
+	- a lifecycle policy migrates files that have not been accessed for a set period of time to the Infrequent Access (IA) storage class. 
+	- Possible values for the period: 7, 14, 30, 60 and 90 days.
+	- Lifecycle policy applies to the whole filesystem.
+- Locking in Amazon EFS follows the NFSv4.1 protocol for advisory locking, and enables your applications to use both whole file and byte range locks.
+
+EFS Performance Modes:
+- EFS offers two performance modes, General Purpose mode and Max I/O mode. 
+- General Purpose performance mode:
+	- Default.
+	- Recommended for the majority of use cases and latency-sensitive use cases.
+- Max I/O performance mode: 
+	- Can scale to higher levels of aggregate throughput and operations per second. 
+	- This scaling is done with a tradeoff of slightly higher latencies for file metadata operations. 
+	- Recommended for highly parallelized applications and workloads, such as big data analysis and media processing.
+
+EFS Throughput Modes:
+- There are two throughput modes to choose from for your file system: Bursting Throughput and Provisioned Throughput. 
+- Bursting Throughput mode:
+	- Throughput scales as the size of your file system in the standard storage class grows. 
+	- File systems of less than 1 TiB can burst to 100 MiB/s of metered throughput. 
+	- File systems of more than 1 TiB can burst to 100 MiB/s of metered throughput per TiB of storage.
+	- The portion of time that a file system can burst is determined by its size. 
+	- EFS uses a credit system to determine when file systems can burst. 
+	- A file system accumulates burst credits whenever it is inactive or driving throughput below its baseline metered rate (50 MiB/s per TiB per storage). 
+- Provisioned Throughput mode:
+	- You can instantly provision the throughput of your file system (in MiB/s) independent of the amount of data stored. 
+- EFS file systems meter read requests at one-third the rate of other requests. 
+
+IAM authorization for NFS clients:
+- This is an option you can activate.
+- NFS clients can identify themselves using an IAM role when connecting to an EFS file system. 
+- EFS resource-based policies are called file system policies.
+- The default EFS file system policy grants full access to any client that can connect to the file system using a file system mount target. 
+- Using a file system policy, you can specify the following actions for clients wanting to mount a file system.
+	- ClientMount: Provides read-only access to a file system.
+	- ClientWrite: Provides write permissions on a file system.
+	- ClientRootAccess: Provides use of the root user when accessing a file system.
+- Controlled conditions: TLS encryption, specific Access Points.
+
+EFS Access Points:
+- EFS Access Points are entry points into an EFS file system that make it easier to manage application access to shared datasets. 
+- When user enforcement is enabled, Amazon EFS replaces the NFS client's user and group IDs with the identity configured on the access point for all file system operations.
+- Can also enforce a different root directory for the file system so that clients can only access data in the specified directory or its subdirectories. This is the "Path" attribute of the access point.
+- You can use an IAM policy to enforce that a specific NFS client, identified by its IAM role, can only access a specific access point. To do this, you use the elasticfilesystem:AccessPointArn IAM condition key.
+
+EFS File-level permissions:
+- The mount command can mount any directory in the file system. 
+- By default only the root user (UID 0) has read, write, and execute permissions.
+- When an NFS client mounts an EFS file system without using an access point, the user ID and group ID provided by the client is trusted. You can use EFS access points to override user ID and group IDs used by the NFS client. 
+- EFS file access authorization is based on the UNIX-like numeric user and group identifiers provided by the NFS client.
+- For non-root users to modify the file system, the root user must explicitly grant them access. 
+
+==================================
+
+
+Amazon FSx for Windows File Server:
+- Provides fully managed SMB file storage.
+- Built on Windows Server.
+- Options of HDD or SSD.
+- Data deduplication.
+- End-user file restore.
+- Microsoft Active Directory (AD) integration.
+- Single-AZ and multi-AZ deployment options.
+- Standby file server in a separate AZ for single-AZ deployment.
+- Automatic daily backups are turned on by default. Uses VSS service for consistency.
+- Encryption of data at rest and in transit.
+
+
+Amazon FSx for Lustre:
+- The open-source Lustre file system is designed for applications that require fast storage.
+- You use Lustre for workloads where speed matters, such as machine learning, high performance computing (HPC), video processing, and financial modeling. 
+- Provides sub-millisecond latencies, up to hundreds of GBps of throughput, and up to millions of IOPS.
+- POSIX-compliant.
+- Read-after-write consistency.
+- Supports file locking. 
+- Offers a choice of scratch and persistent file systems.
+- Scratch file systems:
+	- Ideal for temporary storage and shorter-term processing of data. 
+	- Data is not replicated and does not persist if a file server fails. 
+- Persistent file systems:
+	- Ideal for longer-term storage and workloads. 
+	- Data is replicated, and file servers are replaced if they fail. 
+- Choice of SSD and HDD storage. In case of HDD, you can have an additional 20% SSD cache option.
+- Integrated with S3: transparently presents S3 objects as files. 
+- Can be used by Linux EC2 instances (using an open-source client) and EKS containers (using a driver).
+- Supports encryption at rest and in transit using AWS KMS.
+
+
+Amazon WorkDocs:
+- A fully managed, secure enterprise storage and sharing service (like DropBox, Box, …).
+- Your user's files are only visible to them, and their designated contributors and viewers. 
+- Other members of your organization do not have access to other user's files unless they are specifically granted access. 
+- Non-administrative users use the client applications to access their files: 
+	- A web application used for document management and reviewing.
+	- Native apps for mobile devices used for document review.
+	- WorkDocs Drive: a document synchronization app used to synchronize a folder on your macOS or Windows desktop with your Amazon WorkDocs files.
+	- Web clipper browser extensions for several popular web browsers that allow you to save an image of a webpage to your Amazon WorkDocs files.
+- Users can share content by sending a link or an invite. 
+- They can also collaborate with external users if external sharing is enabled. 
+- You can edit documents directly in Microsoft Office with Amazon WorkDocs Companion.
+- Supports also « Open with Microsoft Office Online ».
+- You can create an approval workflow to route documents to one or more users for their approval.
+
+==================================
+
+Amazon S3 (Simple Storage Service):
+- Object Storage service via HTTP/S.
+- You cannot modify an object in S3: you need to overwrite it.
+- Consistency:
+	- new objects: strong read-after-write consistency.
+	- replaced objects: eventual consistency.
+- Buckets:
+	- A bucket is a container for objects. 
+	- An S3 bucket name is globally unique across all AWS accounts. 
+	- A Bucket resides in only one region.
+- Objects:
+	- An object is a file with any metadata that describes that file.
+	- An object key is the unique identifier for an object within a bucket. 
+	- The combination of a bucket, key, and version ID uniquely identify each object.
+	- Every object in Amazon S3 can be uniquely addressed through the combination of the web service endpoint, bucket name, key, and optionally, a version. 
+- HA: S3 data replicated across 3 AZs at least (except the One Zone-IA and RRS classes).
+- Block Public Access option: to ensure that public access to all your S3 buckets and objects is blocked. This setting applies account-wide for all current and future buckets. 
+- Supports events notifications. Targets: SNS, SQS & Lambda.
+- Object Versioning option:
+	- If disabled, S3 sets the value of the version ID to "null". 
+	- If enabled, S3 automatically generates a unique version ID for every new object that is created or updated. 
+	- Object versions that existed before you enable the versioning option keep their version ID as "null". 
+
+S3 Storage Classes (per object):
+- S3 Standard: low latency, high performance, high cost. Default class. No retrieval fees.
+- S3 Reduced Redundancy (RRS): low availability (not recommended)
+- S3 Standard-IA: Infrequent Access, same performance as S3-Standard, medium cost, min storage 30 days, retrieval fee.
+- S3 One Zone-IA: Infrequent Access, stored only in one AZ 
+- S3 Glacier: Archival, Retrieval fee, min storage 90 days, 3 retrieval speeds (from minutes to 12 hours).
+- S3 Glacier Deep Archive: Archival, Retrieval fee, min storage 180 days, 2 retrieval speeds (12 or 24 hours). Internally uses S3 Glacier.
+- S3 Intelligent-Tiering: automatically moving data to the most cost-effective access tier, without operational overhead. Min 30 days. No retrieval fees.
+
+S3 Object size:
+- The total volume of data and number of objects you can store are unlimited. 
+- Max size of an object is 5 TB.
+- Max object upload in a single PUT is 5 GB. Beyond this, you need to use multipart upload. 
+
+S3 vs S3 Glacier naming:
+- File Container: 	S3=Bucket, Glacier=Vault.
+- File: 			S3=Object, Glacier=Archive.
+
+S3 Bucket options:
+- Versioning.
+- Cross Region Replication (CRR). Requires to activate versioning.
+- Data lifecycle management.
+- MFA delete
+- Requester pays for the data transfers.
+- Notification.
+
+S3 Bucket Policies:
+- Permissions and ACL.
+- Time-limited access to objects.
+
+S3 Bucket access URL:
+- Direct Access: Amazon S3 supports two URL styles to access a bucket directly:
+	- virtual-hosted-style: https://{bucket-name}.s3.{Region}.amazonaws.com/{key-name}
+	- path-style: https://s3.{Region}.amazonaws.com/{bucket-name}/{key-name}
+- S3 Access Point: 
+	- Access points are named network endpoints that are attached to buckets.
+	- Each access point enforces distinct permissions and network controls.
+	- You can create multiple access points for a single bucket to manage access policies in different use cases instead of a single bucket policy that spans dozens or hundreds of use cases.
+	- supports only virtual-host-style addressing.
+- S3://
+	- Some AWS services require specifying an Amazon S3 bucket using the S3:// notation.
+	- Format: s3://{bucket-name}/{key-name}
+
+S3 Presigned URLs:
+- A presigned URL gives you access to the object identified in the URL for specified duration.
+- When you create a presigned URL, you associate it with a specific action.
+- Anyone using the URL will act on the object as if he were the original signing user. 
+
+S3 Replication:
+- Replication enables automatic, asynchronous copying of objects across Amazon S3 buckets.
+- Single or multiple destinations.
+- Same or different accounts.
+- Same or different region (SRR or CRR).
+- Same or different storage class.
+- Replication Time Control (RTC) feature enables SLA of 15 minutes for replication of 99.9% of objects during any billing month.
+- Read access available for replicas.
+
+Prefixes and S3 Performance:
+- A prefix is a logical grouping of the objects in a bucket.
+- The prefix value is similar to a directory name that enables you to store similar data under the same directory in a bucket.
+- Can create a hierarchy. 
+- You can chose your delimiter for the bucket, such as slash (/).
+- S3 Request rates: 3,500 writes and 5,500 reads per second PER PREFIX!
+- To parallelize reads/writes, use multiple prefixes.
+
+S3 Transfer Acceleration: 
+- A bucket-level feature that enables fast, easy, and secure transfers of files over long distances between your client and an S3 bucket. 
+- Takes advantage of the globally distributed edge locations in Amazon CloudFront. 
+- As the data arrives at an edge location, the data is routed to Amazon S3 over an optimized network path. 
+- Popular use cases:
+	- Your customers upload to a centralized bucket from all over the world.
+	- You transfer gigabytes to terabytes of data on a regular basis across continents.
+	- You can't use all of your available bandwidth over the internet when uploading to Amazon S3.
+- To access the bucket that is enabled for Transfer Acceleration, you must use the endpoint {bucket-name}.s3-accelerate.amazonaws.com. 
+- You can use the Amazon S3 Transfer Acceleration Speed Comparison tool to compare accelerated and non-accelerated upload speeds across Amazon S3 Regions.
+
+S3 Encryption - Server-Side Encryption (SSE):
+You have three mutually exclusive options, depending on how you choose to manage the encryption keys:
+- Server-Side Encryption with S3-Managed Keys (SSE-S3).
+- Server-Side Encryption with CMKs stored in KMS (SSE-KMS).
+- Server-Side Encryption with Customer-Provided Keys (SSE-C).
+
+SSE-S3:
+- Each object is encrypted with a unique key.
+- Encrypts the key itself with a master key that it regularly rotates. 
+- Uses AES-256.
+- Users do not manage the key or key permission.
+
+SSE-KMS:
+- S3 uses AWS KMS customer master keys (CMKs) to encrypt your Amazon S3 objects. 
+- Encrypts only the object data. Any object metadata is not encrypted. 
+- When you use SSE-KMS encryption with an S3 bucket, the AWS KMS CMK must be in the same Region as the bucket. 
+- You can use the default AWS managed CMK, or you can specify a customer managed CMK that you have already created. 
+- Users who have access to a bucket will not see the encrypted files if they do not have permissions to use the encryption key in KMS. So you need to manage the key permissions in KMS even if the key is an AWS-managed CMK.
+
+SSE-C:
+- you manage the encryption keys and Amazon S3 manages the encryption, as it writes to disks, and decryption, when you access your objects. 
+- Uses AES-256.
+- The encryption key must be provided in every request.
+
+Hosting a static website on S3:
+- You can configure your bucket as a static website.
+- Website endpoints are different from the endpoints where you send REST API requests. 
+- You configure the index document for the website.
+- HTTPS not supported.
+- When using your own domain name, bucket names must match your domain name exactly.
+
+CORS in S3:
+- About the CORS standard in general:
+	- The same-origin policy is a browser security policy that restricts on-page scripts from accessing or posting data to resources from a different host, on a different port, or with a different protocol than the current page. 
+	- The HTML document itself can access cross-origin resources. However, scripts cannot access cross-origin resources. This is because a script could send data while accessing a cross-origin resource.
+	- CORS, or Cross Origin Resource Sharing, is a method of accessing cross-origin resources safely. 
+	- With CORS, the browser first does a preflight OPTIONS request on the target server to check if the server accepts CORS. Then the browser sends the actual request with proper CORS headers. 
+- For Web pages hosted on S3, you need to enable the CORS option on the target bucket that is referenced by your web page.
+
+Query in Place options in S3:
+- S3 Select:
+	- you can use simple SQL statements to filter contents of S3 objects and retrieve just the subset of data that you need. 
+	- Works on objects stored in CSV, JSON, or Apache Parquet format.
+	- Supports compressed objects in GZIP and BZIP2 for CSV and JSON.
+	- supports server-side encrypted objects.
+- Amazon Athena.
+- Amazon Redshift Spectrum.
+
+Query in Place options in S3 Glacier:
+- S3 Glacier Select:
+	- you can use simple SQL statements to filter contents of S3 objects and retrieve just the subset of data that you need. 
+	- retrieved data is stored in S3.
+	- Works only on uncompressed CSV files.
+	- You need to create a Glacier Job to run the SQL request.
+
+S3 Batch Operations:
+- A feature that you can use to automate the execution, management, and auditing of a specific S3 request or Lambda function across many objects stored in Amazon S3. 
+- You can use S3 Batch Operations to automate replacing tag sets on S3 objects, updating access control lists (ACL) for S3 objects, copying storage between buckets, initiating a restore from Glacier to S3, or performing custom operations with Lambda functions.
+- You should use S3 Batch Operations if you want to automate the execution of a single operation (like copying an object, or executing an AWS Lambda function) across many objects. 
+- With S3 Batch Operations, you can, with a few clicks in the S3 console or a single API request, make a change to billions of objects without having to write custom application code or run compute clusters for storage management applications. 
+
+S3 Object Lock:
+- Blocks object version deletion during a customer-defined retention period so that you can enforce retention policies as an added layer of data protection or for regulatory compliance.
+- If a user attempts to delete an object before its Retain Until Date has passed, the operation will be denied.
+- Two modes for locking in S3:
+	- Governance Mode: specific IAM permissions are able to remove the lock.
+	- Compliance Mode: lock protection cannot be removed by any user, including root.
+- Two methods for locking in S3 Glacier:
+	- Vault Access policy: can be modified.
+	- Vault Lock policy: can be locked for compliance.
+
+S3 Monitoring options:
+- CloudTrail Logs: 
+	- provide a record of actions taken by a user, role, or an AWS service.
+	- Data events incur a fee, in addition to storage of logs.
+	- Speed of delivery: Data events every 5 mins; management events every 15 mins.
+	- Log format: JSON.
+- S3 Server Access Logs:
+	- provide detailed records for the requests that are made to an S3 bucket or objects. 
+	- Free.
+	- Speed of delivery: Within a few hours.
+	- Log format: unstructured log file.
+
+==================================
+
+S3 Glacier:
+- extremely low-cost Amazon S3 storage class for data archiving and long-term backup. 
+- REST-based web service. 
+- a vault is a container for storing archives (any type of files).
+- up to 1,000 vaults per account.
+- unlimited number of archives in a vault.
+- Archives can be up to 40 TB.
+- Integrates with S3 lifecycle policies.
+- Query in Place supported with S3 Glacier Select. 
+- Retrieving an archive from S3 Glacier is an asynchronous 2-step operation:
+	- You first initiate a retrieval job,
+	- After the job completes, you send a GET request to download the output. 
+- 3 retrieval options for Glacier:
+	- Expedited: 1-5 minutes.
+	- Standard: 3-5 hours.
+	- Bulk: 5-12 hours.
+- 2 retrieval options for Glacier Deep Archive:
+	- Standard: 12 hours.
+	- Bulk: 24 hours.
+- Supports retrieval policies (limits).
+- Supports a Vault Lock policy.
+
+S3 Provisioned Capacity Units:
+- Provisioned Capacity guarantees that your retrieval capacity for Expedited retrievals will be available when you need it. 
+- Each unit of capacity ensures that at least 3 expedited retrievals can be performed every 5 minutes and provides up to 150MB/s of retrieval throughput. 
+- Without provisioned capacity, Expedited retrieval requests will be accepted if capacity is available at the time the request is made. 
+
+==================================
+
+Storage Services feature summary:
+- Data Consistency:
+	- EBS: 	Strong.
+	- EFS: 	Strong (close-to-open consistency).
+	- S3: 		Strong (Strong consistency since 01-Dec-2020. Eventually consistent before that).
+- In-Region Data High Availability:
+	- EBS: 	data replicated synchronously inside the AZ. Automatic failover.
+	- EFS: 	data replicated synchronously to another AZ. Multi-AZ=active-active AZ. Single-AZ=active-passive AZ.
+	- FSx: 		data replicated synchronously to another AZ. Multi-AZ=active-active AZ. Single-AZ=active-passive AZ.
+	- S3: 		data replicated synchronously across 3 AZs at least.
+- Cross-Region Data High Availability:
+	- EBS: 	cross-region backup and restore.
+	- EFS: 	use DataSync for EFS-to-EFS replication.
+	- S3: 		Asynchronous replication with CRR.
+- Storage classes:
+	- EBS:		P-IOPS, GP-SSD, HDD Hot, HDD Cold.
+	- EFS: 	Standard, IA.
+	- FSx: 		HDD, SSD.
+	- S3: 		Standard, Standard-RRS, Standard-IA, One-Zone IA, Glacier, Glacier Deep Archive, Intelligent Tiering.
+- Access Protocol:
+	- EBS: 	disk volume attach (iSCSI).
+	- EFS: 	NFS v4.
+	- FSx: 		SMB.
+	- S3: 		HTTP.
+
+==================================
+
+AWS Backup:
+- A fully managed backup service that makes it easy to centralize and automate the backup of data across AWS services in the cloud and on premises.
+- You can create backup policies that automate backup schedules and retention management. 
+- Supported AWS resources: EFS, EBS, EC2, FSx, DynamoDB, RDS, Aurora, Storage Gateway.
+- You can create backup policies known as backup plans. 
+- You can apply backup plans to your AWS resources by tagging them. 
+- You can copy backups to multiple AWS Regions on demand or automatically as part of a scheduled backup plan. 
+- A backup vault is a container that you organize your backups in. 
+
+
+Amazon Data Lifecycle Manager (DLM):
+- Automate the creation, retention, and deletion of EBS snapshots and EBS-backed AMIs. 
+- Uses resource tags to identify the resources to back up. 
+- Policy schedules define when snapshots or AMIs are created by the policy. 
+- Policies can have up to four schedules—one mandatory schedule, and up to three optional schedules. 
+- Retention: you can retain snapshots or AMIs based either on their total count (count-based), or their age (age-based). 
+
+
+AWS Backup vs AWS DLM:
+- You should use DLM when you want to automate the creation, retention, and deletion of EBS snapshots. 
+- You should use AWS Backup to manage and monitor backups across the AWS services you use, including EBS volumes, from a single place.
+
+==================================
+
+AWS Storage Gateway:
+- Appliance that offers file-based, volume-based, and tape-based storage solutions on prem.
+
+File Gateway:
+- A file interface into Amazon S3.
+- Software appliance. Supports ESXi, Hyper-V and KVM.
+- Provides file access with NFSv4 and SMB.
+
+Volume Gateway:
+- S3-backed storage volumes that you can mount as iSCSI devices.
+- Software Appliance. Supports ESXi, Hyper-V and KVM.
+- Two volume types:
+	- Cached Volumes: Cloud S3 volumes that are cached locally on the appliance. Up to 32 TB per volume.
+	- Stored Volumes: Can store volumes locally on the appliance with snapshots to S3 (as EBS snapshots). Up to 16 TiB per volume.
+
+Tape Gateway:
+- Cloud-backed VTL services
+- Can run on-premises as a VM appliance, as a hardware appliance, or in AWS as an Amazon EC2 instance (for apps hosted on EC2). 
+- Supports ESXi, Hyper-V and KVM.
+- Virtual Tapes are backed by S3 with a local cache and buffer on the appliance.
+- Virtual Tape Shelf (VTS) backed by S3 with choice of storage classes: GLACIER or DEEP_ARCHIVE.
+
+==================================
+
+AWS DataSync:
+- An online data transfer service between on-premises storage systems and AWS storage services, and also between AWS storage services. 
+- DataSync can copy data between NFS, SMB file servers, self-managed object storage, AWS Snowcone, S3 buckets, EFS file systems, and Amazon FSx file systems. 
+- Includes automatic encryption.
+- Can Move cold data stored in on-premises storage directly to durable and secure long-term storage such as Amazon S3 Glacier or S3 Glacier Deep Archive. 
+- A DataSync agent is a VM that you own that is used to read or write data from self-managed storage systems. 
+- A location is an endpoint of a task. Each task has two locations—a source location and a destination location. 
+- You can narrow down the copied files by filtering the data or by configuring DataSync to not overwrite files that are already present on the destination. 
+- DataSync verifies data integrity: locally calculates the checksum of every file in the source file system and the destination and compares them.
+
+
+
+
+
+
+
+

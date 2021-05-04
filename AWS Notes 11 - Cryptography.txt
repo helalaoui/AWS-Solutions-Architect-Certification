@@ -1,0 +1,154 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 11: Cryptography ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+AWS Signature version 4:
+- When you send HTTP requests to AWS services, you (or your client tool/SDK) sign the requests so that AWS can identify who sent them. 
+- You sign requests with your AWS access key, which consists of an access key ID and secret access key.
+- Some requests do not need to be signed, such as anonymous requests to Amazon S3.
+
+===========================
+
+AWS CloudHSM:
+- A hardware security module (HSM) is a computing device that processes cryptographic operations and provides secure storage for cryptographic keys. 
+- AWS CloudHSM provides single-tenant HSMs in the AWS Cloud.
+- Use cases:
+	- Generate, store, import, export, and manage cryptographic keys, including symmetric keys and asymmetric key pairs.
+	- Use symmetric and asymmetric algorithms to encrypt and decrypt data.
+	- Cryptographically sign data (including code signing) and verify signatures.
+	- Offload the SSL/TLS Processing for Web Servers.
+	- Protect the Private Keys for a certificate issuing Certificate Authority (CA).
+- CloudHSM Client SDK includes software to integrate your applications with your CloudHSM cluster.
+- You can create a cluster that has from 1 to 28 HSMs in different AZs in the same Region. The default limit is 6 HSMs per account per region.
+- Backup:
+	- AWS CloudHSM makes periodic backups of the users, keys, and policies in the cluster. 
+	- The HSM encrypts all of its data before sending it to a service-controlled S3 bucket. 
+- FIPS 140-2 Level 3 certified.
+- Pricing: number of hours.
+
+===========================
+
+Envelope encryption:
+- Envelope encryption is the practice of encrypting plaintext data with a data key, and then encrypting the data key under another key. 
+- The latter key can also be encrypted under a third key, and so on.
+- Eventually, one key must remain in plaintext so you can decrypt the keys and your data. 
+- This top-level plaintext encryption key is known as the master key. 
+
+AWS Key Management Service (KMS):
+- A fully managed service to create and manage cryptographic keys.
+- You can create symmetric or asymmetric keys.
+- You can also import keys from your own key management infrastructure or use keys stored in your AWS CloudHSM cluster (custom key store). In both cases, only symmetric keys are supported. 
+- Enforces permissions to use keys using AWS IAM.
+- KMS keys management is a multi-tenant infrastructure (FIPS level 2). If you require a dedicated infrastructure (FIPS Level 3), use a custom key store (backed with a CloudHSM cluster).
+- You can choose automatic rotation of symmetric master keys generated in AWS KMS once per year without the need to re-encrypt previously encrypted data. The service automatically keeps older versions of the master key available to decrypt previously encrypted data. 
+- In KMS, a master key is called Customer Master Key (CMK).
+
+Custom Key Store:
+- KMS provides the option for you to create your own key store using HSMs that you own and manage (FIPS 140-2 Level 3 certified).
+- Each custom key store is backed by an AWS CloudHSM cluster. 
+- When you create a CMK in a custom key store, the service generates and stores key material for the CMK in the associated CloudHSM cluster. 
+
+Asymmetric Keys:
+- KMS provides you the capability to create and use asymmetric CMKs.
+- You can designate a CMK for use as a signing key pair or an encryption key pair. 
+- Asymmetric cryptographic operations using these CMKs are performed inside HSMs. You can request the public portion of the asymmetric CMK for use in your local applications, while the private portion never leaves the service.
+- You can also generate an asymmetric data key pair. This operation returns a plaintext copy of the public key and private key.
+
+Symmetric vs Asymmetric:
+- AWS KMS supports symmetric and asymmetric CMKs. 
+- A symmetric CMK represents a 256-bit key that is used for encryption and decryption. 
+- An asymmetric CMK represents either:
+	- an RSA key pair that is used for encryption and decryption or signing and verification (but not both),
+	- an Elliptic Curve (ECC) key pair that is used for signing and verification. 
+
+Customer Master Keys (CMKs):
+- CMK is a logical representation of a master key. The CMK includes metadata, such as the key ID, creation date, description, and key state. 
+- You can use AWS KMS APIs directly to encrypt and decrypt data using your CMKs stored in the service (up to 4 KB of data per API call).
+- Can be Symmetric or Asymmetric.
+- Symmetric Keys cannot be exported.
+- For Asymmetric keys, only the public key can be exported.
+- Key identifiers (Key IDs) act as names for your CMKs.
+
+Customer managed CMKs: 
+- You have full control over the management of your keys, including the ability to share access to keys across accounts or services.
+- You can assign policies to these CMKs.
+- You can define an alias and description for the key.
+- You can opt-in to have the key automatically rotated once per year (for symmetric keys only).
+
+AWS managed CMKs:
+- Applies to some AWS services only.
+- For these AWS services, data is encrypted by default using keys that are stored in your AWS KMS and managed by the AWS service in question. 
+- Some services give you the choice of managing the keys yourself or allowing the service to manage the keys on your behalf. 
+- Automatic rotation required every 3 years (for symmetric keys only).
+
+AWS owned CMKs:
+- a collection of CMKs that an AWS service owns and manages for use in multiple AWS accounts. 
+- You cannot view or use them.
+
+Data keys: 
+- Used to encrypt data locally in the AWS service or in your application. 
+- Generated by KMS but must be used outside of KMS.
+- Data keys are not retained or managed by AWS KMS. 
+- Can be exported in plain text or encrypted under a symmetric CMK you define. 
+- Can be symmetric (data key) or asymmetric (data key pair).
+- Data keys used by AWS Services:
+	- Some AWS services (like S3) encrypt your data and store an encrypted copy of the data key along with the encrypted data.
+	-  When the service needs to decrypt your data, it requests AWS KMS to decrypt the data key using your CMK.
+	- If the user requesting data from the AWS service is authorized to decrypt under your CMK, the AWS service will receive the decrypted data key from AWS KMS. The AWS service then decrypts your data and returns it in plaintext. 
+
+CMK Authorization:
+- Key administrator: manages the key but cannot use it.
+- Key User: can use the key.
+
+=======================
+
+AWS Certificate Manager (ACM):
+- A service that lets you easily provision, manage, and deploy public and private SSL/TLS certificates for use with AWS services and your internal connected resources. 
+- ACM makes it easy to import SSL/TLS certificates issued by third-party CAs and deploy them with your ELBs, CloudFront and API Gateways. 
+- Certificates in ACM are regional resources. To use a certificate with ELB for the same FQDN in more than one AWS region, you must request or import a certificate for each region.
+- To use an ACM certificate with Amazon CloudFront, you must request or import the certificate in the US East (N. Virginia) region. 
+- Public and private certificates provisioned through AWS Certificate Manager for use with ACM-integrated services are free. 
+- ACM provides managed renewal for your Amazon-issued SSL/TLS certificates. 
+- ACM Private Certificate Authority (CA):
+	- A managed private CA service that helps you easily and securely manage the lifecycle of your private certificates. 
+	- You pay monthly for the operation of the private CA and for the private certificates you issue.
+
+
+ACM vs IAM certificate store:
+- For certificates in a Region supported by ACM, we recommend that you use ACM to provision, manage, and deploy your server certificates.
+- In unsupported Regions, you must use IAM as a certificate manager. 
+
+=======================
+
+AWS Secrets Manager:
+- Enables you to replace hardcoded credentials in your code, including passwords, with an API call to Secrets Manager to retrieve the secret programmatically. 
+- Provides this flexibility by storing the secret as key-value pairs of text strings. 
+- Supports versioning.
+- Can automatically rotate the secret for you according to a specified schedule. This enables you to replace long-term secrets with short-term ones, significantly reducing the risk of compromise.
+- Supports binary data in the secret.
+- Access control enforced by AWS IAM: use identity-based or resource-based policies.
+- Uses KMS Envelope Encryption: secrets can be encrypted by a data key generated by KMS. The encrypted data key is stored with the secret. Secret Manager uses KMS to decrypt the data key when needed.
+- Sensitive data stored in AWS Secrets Manager secrets can be exposed to an ECS container or to an AWS Batch job as environment variables or as part of the log configuration. 
+
+
+

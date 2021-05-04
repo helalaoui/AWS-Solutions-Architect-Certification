@@ -1,0 +1,192 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 07: Migration ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+The 7 Rs of application migration:
+	- Rehost (lift and shift): Move an application to the cloud without making any changes: from a VM/Server to an EC2 instance.
+	- Relocate (hypervisor-level lift and shift): This migration scenario is specific to VMware Cloud on AWS, which supports VM workload portability between your on-premises environment and AWS.
+	- Replatform (lift and reshape): Move an application to the cloud by taking advantage of cloud capabilities like PaaS. For example, migrate your on-premises Oracle database to Amazon RDS for Oracle.
+	- Refactor (re-architect) – Move an application and modify its architecture by taking full advantage of cloud-native features to improve agility, performance, and scalability.
+	- Repurchase (drop and shop) – Change to a different product, typically by moving from a traditional application to a software as a service (SaaS) product.
+	- Retain (revisit) – Keep applications in your source environment, at least temporarily.
+	- Retire – Decommission or remove applications that are no longer needed in your source environment.
+
+
+=====================================
+
+Server/Application Migration Options:
+
+
+AWS Application Discovery Service:
+- Helps you plan your migration to the AWS cloud by collecting usage and configuration data about your on-premises servers.
+- Integrated with AWS Migration Hub.
+- You can view the discovered servers, group them into applications, and then track the migration status of each application from the Migration Hub console
+- You can export the system performance and utilization data for your discovered servers into your cost model to compute the cost of running those servers in AWS. 
+- You can export data about the network connections that exist between servers. This information helps you determine the network dependencies between servers and group them into applications for migration planning. 
+- Agentless discovery: can be performed by deploying the AWS Agentless Discovery Connector (OVA file) through your VMware vCenter.
+- Agent-based discovery can be performed by deploying the AWS Application Discovery Agent on each of your VMs and physical servers. 
+
+
+AWS Server Migration Service (SMS):
+- An agentless service that automates the migration of your on-premises VMware vSphere, Microsoft Hyper-V/SCVMM, and Azure virtual machines to the AWS Cloud. 
+- Uses the Server Migration Service Connector which is a FreeBSD VM that you install in your on-premises virtualization environment. 
+- Incrementally replicates your server VMs (snapshots) as cloud-hosted AMIs ready for deployment on Amazon EC2. 
+- You can schedule replications and track progress of a group of servers that constitutes an application. 
+- Supports Windows and Linux.
+- Limit: 50 concurrent VM migrations per account.
+
+
+CloudEndure Migration:
+- An agent-based tool that rehosts your applications on AWS.
+- Supports self-service, highly automated, lift-and-shift migrations with minimal business disruption. 
+- You install the CloudEndure Agent on your source machines.
+- The Agent replicates your applications and data in a staging area on AWS.
+- After the initial replication, the CloudEndure Agent tracks and migrates changes from your source environment to the target staging area by using asynchronous, block-level data replication, without causing downtime or affecting performance.
+
+
+=====================================
+
+Database Migration Options:
+
+
+RDS Migration (MySQL & MariaDB):
+- If your scenario supports it, it is easier to move data in and out of Amazon RDS by using backup files and Amazon S3. 
+- Use cases:
+	- Migrate data from an on-prem MySQL or MariaDB live database to AWS RDS. You need therefore to minimize the impact on application availability.
+	- Migrate a very large on-prem MySQL or MariaDB database to RDS. You need to reduce the cost of the import by reducing the amount of data that is passed across the network to AWS. 
+-Procedure:
+	- Use the mysqldump utility to create a database backup in either SQL or delimited-text format.
+	- Compress your database backup file,
+	- Transfer your compressed database backup to an Amazon EC2 instance. You can use scp or an SSH client to copy the file. 
+	- Import the data into a new Amazon RDS DB instance (same region as the EC2 instance).
+	- You then use replication to bring the Amazon RDS DB instance up-to-date with your live on-prem instance, before redirecting your application to the Amazon RDS DB instance. 
+
+RDS SQL Server Migration:
+- If your database can be offline while the backup file is created, copied, and restored, we recommend that you use native backup and restore to migrate it to RDS:
+	- You can create a full backup from your local server using full backup files (.bak files).
+	- Transfer the backup file to S3.
+	- Restore the backup from S3 onto an existing Amazon RDS DB instance. 
+- If your on-premises database can't be offline, we recommend that you use the AWS Database Migration Service to migrate your database to Amazon RDS.
+
+RDS Oracle Migration:
+- How you import Oracle data into an Amazon RDS DB instance depends on the amount of data you have and the number and variety of database objects in your database:
+	- You can use Oracle SQL Developer to import a simple, 20 MB database. 
+	- You can use Oracle Data Pump to import complex databases, or databases that are several hundred megabytes or several terabytes in size.
+	- You can use AWS Database Migration Service (AWS DMS) to migrate databases without downtime and continue ongoing replication until you are ready to switch over to the target database.
+
+
+AWS Database Migration Service (AWS DMS):
+- A cloud service that makes it easy to migrate relational databases, data warehouses, NoSQL databases, and other types of data stores.
+- You can use AWS DMS to migrate your data into the AWS Cloud, between on-premises instances (through an AWS Cloud setup), or between combinations of cloud and on-premises setups. 
+- With AWS DMS, you can perform one-time migrations, and you can replicate ongoing changes to keep sources and targets in sync.
+- Uses an AWS DMS replication instance: a managed EC2 instance that runs replication tasks.
+- If you want to change database engines, you can use the AWS Schema Conversion Tool (AWS SCT) to translate your database schema to the new platform. You then use AWS DMS to migrate the data. 
+- AWS DMS supports nearly all of today's most popular DBMS engines as data sources, including Oracle, Microsoft SQL Server, MySQL, MariaDB, PostgreSQL, Db2 LUW, SAP, MongoDB, and Amazon Aurora. 
+- AWS DMS provides a broad coverage of available target engines including Oracle, Microsoft SQL Server, PostgreSQL, MySQL, Amazon Redshift, SAP ASE, Amazon S3, and Amazon DynamoDB. 
+- Change Data Capture (CDC):
+	- You can create an AWS DMS task that captures ongoing changes to the source data store while you are migrating your data.
+	- You can also create a task that captures ongoing changes after you complete your initial (full-load) migration to a supported target data store. 
+	- This process is called ongoing replication or change data capture (CDC). AWS DMS uses this process when replicating ongoing changes from a source data store. 
+	- This process works by collecting changes to the database logs using the database engine's native API. 
+- You can use DMS and AWS Snowball Edge to migrate large Databases from on-prem to AWS:
+	- You use the AWS SCT and DMS to extract the data locally and move it to a Snowball Edge device.
+	- You ship the Edge device or devices back to AWS. The Edge device automatically loads its data into an Amazon S3 bucket.
+	- AWS DMS takes the files from S3 and migrates the data to the target data store.
+	- If you are using CDC, those updates are written to the Amazon S3 bucket and then applied to the target data store.
+
+
+=====================================
+
+AWS Migration Hub:
+- Provides a single place to discover your existing servers, plan migrations, and track the status of each application migration. 
+- Provides visibility into your application portfolio and streamlines planning and tracking. 
+- You can visualize the connections and the status of the servers and databases that make up each of the applications you are migrating, regardless of which migration tool you are using.
+- Gives you the choice to start migrating right away and group servers while migration is underway, or to first discover servers and then group them into applications. Either way, you can migrate each server in an application and track progress from each tool in the AWS Migration Hub. 
+- Supports migration status updates from the following AWS services:
+	- AWS Database Migration Service
+	- AWS Server Migration Service
+	- CloudEndure Migration
+
+
+=====================================
+
+Files/Raw Data Migration Options:
+
+AWS Transfer Family:
+- A secure transfer service that enables you to transfer files into and out of AWS S3 and EFS. 
+- Supported protocols: SFTP, FTPS, FTP.
+- You get started with AWS Transfer Family by creating a file transfer protocol-enabled server and then assigning users to use the server. 
+- You can add users using the Transfer Family service-managed identity or a custom identity provider.
+- Service-managed identity type:
+	- You add users to your file transfer protocol enabled server.
+	- As part of each user's properties, you also store that user's SSH public key. The private key is stored locally on your user's computer. 
+	- You specify a user's home directory, or landing directory, and assign an AWS IAM role to the user.
+	- Optionally, you can provide a scope-down policy to limit user access only to the home directory of your Amazon S3 bucket. 
+- Custom Identity Provider type:
+	- You provide a RESTful interface with a single Amazon API Gateway method. Transfer Family calls this method to authenticate your users.
+	- One option is tu use a Lambda function behind the API gateway and use AWS Secrets Manager as your identity provider.
+	- Supports WAF since Nov-2020: you can enable AWS WAF rules to filter requests based on end users’ source IP addresses or implement rate-based rules to slow down brute force attacks.
+
+
+AWS DataSync:
+- An online data transfer service that simplifies, automates, and accelerates moving data between on-premises storage systems and AWS storage services.
+- Works also between AWS storage services. 
+- DataSync can copy data between NFS, SMB file servers, self-managed object storage, AWS Snowcone, S3 buckets, EFS file systems, and Amazon FSx for Windows File Server file systems. 
+- An agent is a VM that is used to read or write data from self-managed storage systems.
+- The agent can be deployed on VMware ESXi, KVM, Microsoft Hyper-V hypervisors, or it can be launched as an Amazon EC2 instance. 
+
+
+AWS Snowball:
+- an edge computing, data migration, and edge storage device.
+- devices provide both block storage and Amazon S3-compatible object storage. NFS also supported for S3.
+- Data is encrypted (256-bit).
+- comes in two options:
+	- Snowball Edge Storage Optimized: 40 vCPUs, 80TB. Suited for local storage and large scale-data transfer. 
+	- Snowball Edge Compute Optimized: 52 vCPUs, 42TB, optional GPU. Use cases like advanced machine learning and full motion video analysis in disconnected environments. 
+- Supports specific Amazon EC2 instance types and AWS Lambda functions.
+- Can be clustered.
+- Comes in shippable, hardened, secure cases.
+- Can be rack mounted.
+- Weight: 22 kg.
+
+
+AWS Snowcone:
+- portable, rugged, and secure device for data storage, data transfer and edge computing.
+- can run edge computing workloads that use AWS IoT Greengrass or Amazon EC2 instances. 
+- You can use Snowcone to collect, process, and move data to AWS, either offline by shipping the device, or online with AWS DataSync.
+- Usable Storage: 8 TB.
+- Wifi
+- Battery based.
+- Weight: 2 kg.
+
+
+AWS Snowmobile:
+- 45-foot long ruggedized shipping container.
+- appears as a network-attached data store (NFS): 6x 40 GE connectivity.
+- Can ingest up to 1 Tb/s of data.
+- Usable Storage: 100 PB.
+- Tamper-resistant, waterproof, and temperature controlled.
+- Multiple layers of logical and physical security.
+- Data is encrypted (256-bit).
+- Two power options: local utility power source or another container hosting a generator set.
+
+

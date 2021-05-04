@@ -1,0 +1,491 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 06: Databases ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+Relational Database Service (RDS)
+- Relational DB PaaS (almost PaaS).
+- Supported engine options: MySQL, PostgreSQL, Oracle, Microsoft SQL, MariaDB, Amazon Aurora.
+- each DB engine has a set of parameters in a DB parameter group that control the behavior of the databases that it manages. 
+- Multi-AZ: synchronous replica in secondary AZ.
+- ACID Compliance: transactions must be ACID compliant or be Atomic, Consistent, Isolated and Durable (ACID) to ensure data integrity.
+- Billing options: on-demand and reserved instance.
+- Bring your own licenses supported on Oracle.
+- Automated or manual backups.
+- Automated or manual upgrades.
+- Can be placed in a VPC to have control on the network and security.
+
+RDS Instance Class:
+- Instance class = performance tier (CPU, RAM).
+- Three types of instance classes: Standard, Memory Optimized, and Burstable Performance. 
+- You can change the CPU and memory available to a DB instance by changing its DB instance class. 
+- You can control the number of CPU cores and threads for each CPU core to optimize on Licensing costs.
+
+RDS Storage:
+- DB instances for RDS use EBS volumes for database and log storage.
+- Storage options: Magnetic (standard), GP-SSD (gp2) or PIOPS (io1).
+
+RDS Multi-AZ:
+- Synchronous replica in secondary AZ. Master-Standby relationship.
+- The standby replica is invisible.
+- DB snapshots taken against the replica instance.
+- AWS manages DNS for failover.
+- Multi-AZ is different from an RDS read replica.
+
+RDS Read Replica: 
+- Read only instance, for load offloading.
+- Created from a snapshot of the master instance.
+- Asynchronous replication.
+- Up to 5 read replicas to each DB Instance.
+- Same or different AZ. Same or different region.
+- Read Replicas in a different region is supported only on MariaDB, MySQL, Oracle, or PostgreSQL. Not supported on MS-SQL.
+- For MS SQL, the source DB instance must be a Multi-AZ deployment with Always On Availability Groups (AGs). This is an Enterprise Edition feature.
+- For some DB engines, you can transform a read replica to a normal independent instance: promote to master.
+
+RDS Scaling:
+- Performance scaling: manual. You can change the instance class (scale up) or use read replicas (read scale out).
+- Storage scaling: automatic.
+
+RDS Reserved Instances (RI):
+- You can reserve based on a fixed combination of:
+	- DB engine
+	- instance class
+	- Deployment type
+	- License model (included or BYOL)
+	- Region
+- If you change any of the above options, the pricing will revert to normal consumption based (on-demand).
+- RIs can be moved between AZs in the same region.
+- Support multi-AZ deployments
+- Can be applied to Read Replicas (same DB instance class and Region).
+
+RDS Database Authentication options:
+- Password authentication: internal DB users. The DB admin creates users with SQL statements.
+- IAM database authentication: 
+	- Uses standard AWS IAM authentication. 
+	- Supported on MySQL and PostgreSQL. 
+	- An authentication token is used to connect to the DB. 
+- Kerberos authentication: RDS databases (except MariaDB) support Kerberos and Microsoft AD authentication and SSO.
+
+RDS Encryption:
+- RDS encrypts the DB instance, all logs, backups, and snapshots using an AWS KMS CMK.
+- You can also use Transparent Data Encryption (TDE) with RDS for Oracle and RDS for SQL Server.
+- TDE automatically encrypts data before it is written to storage, and automatically decrypts data when the data is read from storage. 
+- Oracle TDE:
+	- A feature available in Oracle Enterprise Edition.
+	- You can choose to encrypt the whole table or just some columns.
+
+RDS Automated Backups:
+- Automated daily incremental volume snapshot of your entire DB instance (VM), not just the DBs. 
+- Backups are stored in Amazon S3. 
+- Automated backups occur daily during the preferred backup window. 
+- If you don't specify a preferred backup window, RDS assigns a default 30-minute backup window that is selected at random from an 8-hour block of time for each AWS Region. 
+- Retention: Up to 35 days. Default: 1 day. 
+- Deleting an RDS instance deletes the automated snapshots but not the manual snapshots.
+- RDS uploads transaction logs for DB instances to Amazon S3 every 5 minutes. RPO is therefore 5mn.
+
+RDS Restore:
+- You cannot restore to an existing instance.
+- Customized DB parameters and SGs are not restored.
+- RDS combines daily backups with transaction logs to restore the DB instance (point-in-time recovery).
+- You can Restore up to the last five minutes.
+- Third party backup and restore process and options are different.
+
+RDS Monitoring:
+- CloudWatch:
+	- Metrics collected from the hypervisor of a DB instance.
+	- Standard Monitoring, CPU utilization.
+- Enhanced Monitoring:
+	- Metrics collected from an agent on the instance. 
+	- Looks at metrics in real time for the operating system.
+	- Useful when you want to see how different processes or threads on a DB instance use the CPU. 
+	- After you have enabled Enhanced Monitoring for your DB instance, you can view the metrics for your DB instance using CloudWatch Logs.
+- Performance Insights:
+	- Metrics collected from inside the DB engine itself.
+	- Expands on existing Amazon RDS monitoring features to illustrate your database's performance and help you analyze any issues that affect it. 
+	- With the Performance Insights dashboard, you can visualize the database load and filter the load by waits, SQL statements, hosts, or users. 
+- RDS event notification:
+	- You can subscribe to an event category for a DB instance, DB snapshot, DB parameter group, or DB security group.
+	- You can create multiple subscriptions for the same DB instances if you want to process differently some event categories.
+	- Notifications are sent using AWS SNS. SNS can then invoke a Lambda function for example.
+
+====================================
+
+Amazon Aurora:
+- A MySQL and PostgreSQL-compatible relational database built for the cloud.
+- With some workloads, Aurora can deliver up to 5x the throughput of MySQL and up to 3x the throughput of PostgreSQL.
+- The underlying storage grows automatically as needed. 
+- Automatic clustering, replication, and storage allocation.
+- An Aurora Cluster is composed of :
+	- DB instances: up to 16.
+	- A cluster volume that manages the data for those DB instances.
+- Aurora cluster volume:
+	- A storage volume that spans multiple AZs, with each AZ having 2 copies of the DB cluster data.
+	- Each data chunk (10GB) is written in 6 copies: 3 AZs, 2 copies per AZ.
+	- Supports loss of 2 copies.
+	- Based on SSD disks.
+	- Automatically grows and shrinks as the amount of data in your database increases or lowers.
+	- Can grow to a maximum size of 128 tebibytes (TiB).
+	- You are only charged for the space that you use in an Aurora cluster volume.
+-Two types of DB instances make up an Aurora DB cluster: 
+	- Primary DB instance: Read and Write. One per cluster. 
+	- Aurora Replica: Read only. Up to 15 per cluster.
+- Replicas can be placed in other AZs.
+- Aurora automatically fails over to an Aurora Replica.
+- Aurora multi-master clusters: all DB instances have read/write capability.
+- Clusters are created in a VPC. Security Groups can be used.
+- Storage can be encrypted.
+
+Aurora Scaling:
+- Performance scaling: manual or automatic with read replicas.
+- Storage scaling: automatic.
+
+Aurora DB endpoints:
+- An endpoint is represented as an Aurora-specific URL that contains a host address and a port. 
+- Cluster endpoint (or writer endpoint):
+	- Connects to the current primary DB instance for that DB cluster. 
+	- This endpoint is the only one that can perform write operations such as DDL statements. 
+	- If the current primary DB instance of a DB cluster fails, Aurora automatically fails over to a new primary DB instance. 
+- Reader endpoint:
+	- Provides read-only connections to the DB cluster on the read-only Aurora Replicas.
+	- If the cluster contains multiple Aurora Replicas, the reader endpoint load-balances each connection request among the Aurora Replicas.
+	- If the cluster contains only a primary instance and no Aurora Replicas, the reader endpoint connects to the primary instance. 
+- Custom endpoint:
+	- Represents a set of DB instances that you choose. 
+	- When you connect to the endpoint, Aurora performs load balancing and chooses one of the instances in the group to handle the connection. 
+	- You can create up to 5 custom endpoints.
+- Instance endpoint:
+	- Connects to a specific DB instance within an Aurora cluster.
+	- Each DB instance in a DB cluster has its own unique instance endpoint.
+
+Aurora Replication options:
+- Different regions: using the Aurora Global Database feature (Up to 5 replicas).
+- Same region: using MySQL binary log (binlog) replication (Up to 5 replicas) or using PostgreSQL's logical replication.
+
+Aurora Global Database:
+- A feature that allows a single Amazon Aurora database to span multiple AWS regions.
+- Composed of a primary DB cluster in one Region, and up to 5 read-only secondary DB clusters in different Regions.
+- Enables fast local reads in each region.
+- Asynchronous replication. Replication latency: 1 sec (RPO = 1s).
+- Manual failover: a secondary region can be promoted to full read/write capabilities in less than 1 minute (RTO = 1mn).
+
+Aurora database authentication options:
+- Password authentication: internal DB users. The DB admin creates users with SQL statements.
+- IAM database authentication: uses standard AWS IAM authentication. An authentication token is used to connect to the DB. 
+- Kerberos authentication: Kerberos and Microsoft AD authentication and SSO.
+
+Aurora Serverless:
+- An on-demand, autoscaling configuration for Aurora.
+- Automatically starts up, shuts down, and scales capacity up or down based on your application's needs.
+- Advantages: Similar than provisioned Aurora, Scalable, Cost-effective.
+- Does not support Global databases, multi-master, replicas, …
+
+
+=================================
+
+Amazon DynamoDB
+- Complete PaaS NoSQL DB with high scalability and low latency.
+- Automatically and synchronously replicates data across 3 AZs.
+- Uses SSDs.
+- You can scale up or down without impact.
+- ElastiCache can be used in front of DynamoDB.
+- Not ideal for Joins and complex transactions.
+- Schema-less DB
+- Stores structured data in tables, indexed by a primary key.
+- Data structure:
+	- a table is a collection of items. 
+	- Each item is a collection of attributes. 
+	- Each attribute has a name and a value. 
+	- One (or two) of the attributes is a unique identifier of the items and is called the primary key.
+- Primary key can be 
+	- a single attribute. In this case: Primary Key = Partition Key.
+	- a combination of two attributes (composite key):
+		- The first attribute is called the Partition Key (or Hash Attribute).
+		- The second attribute is called the Sort Key (or the Range Attribute).
+- All items with the same partition key value are stored together (physical storage), in sorted order by sort key value. 
+- Some attributes can be scalar (one value) or nested (recursive dictionary up to 32 levels deep).
+- Search types: Query and Scan.
+- Query: 
+	- Finds items using the primary key.
+	- Optionally, you can provide a sort key to refine the search.
+- Scan: 
+	- Reads every item in a table or a secondary index. 
+	- By default, a Scan operation returns all of the data attributes for every item.
+	- You can use the ProjectionExpression parameter so that Scan only returns some of the attributes, rather than all of them.
+	- Can retrieve a maximum of 1 MB of data. Uses pagination if the scan result is above 1 MB.
+	- A filter can be applied to the scan but it is applied after retrieval.
+- Supports Cross-Region Replication (see "Global Tables" below).
+- Supports automatic deletion of expired items.
+
+DynamoDB Secondary Indexes:
+- A data structure that contains a subset of attributes from a table, along with an alternate key to support Query operations. 
+- When you create a secondary index, you define an alternate key for the index (partition key and sort key) and the attributes that you want to be projected (copied) from the base table into the index. 
+- Data is automatically maintained by DynamoDB upon change in the base table.
+- You can create one or more secondary indexes on a table. 
+- Can be single or composite (partition key and sort key).
+- Support also Scan operations. 
+- Two types of secondary indexes:
+	- Global: with a partition key and sort key that can be different from those on the table. It is considered "global" because queries on the index can span all of the data in the base table, across all partitions. 
+	- Local:has the same partition key as the table, but a different sort key. It is considered "local" in the sense that every partition of a local secondary index is scoped to a base table partition that has the same partition key value. 
+
+DynamoDB Partitions and Data Distribution:
+- DynamoDB stores data in partitions. 
+- A partition is an allocation of storage for a table, backed by solid state drives (SSDs) and automatically replicated across multiple AZs.
+- When you create a table, DynamoDB allocates sufficient partitions to the table so that it can handle your provisioned throughput requirements.
+- DynamoDB allocates additional partitions to a table in the following situations:
+	- If you increase the table's provisioned throughput settings beyond what the existing partitions can support.
+	- If an existing partition fills to capacity and more storage space is required.
+- Partition management occurs automatically in the background and is transparent to your applications.  
+- To write an item to the table, DynamoDB uses the value of the partition key as input to an internal hash function. The output value from the hash function determines the partition in which the item will be stored. 
+
+DynamoDB Capacity modes:
+- Amazon DynamoDB has two read/write capacity modes for processing reads and writes on your tables:
+	- On-demand: pay-per-request.
+	- Provisioned: default.
+- The mode can be changed.
+- Provisioned mode : 
+	- free-tier eligible,
+	- puts limits for cost predictability,
+	- supports auto scaling
+	- supports reserved capacity.
+- Capacity Units:
+	- You specify throughput requirements in terms of capacity units.
+	- A read capacity unit (RCU) represents one strongly consistent read per second, or two eventually consistent reads per second, for an item up to 4 KB in size. 
+	- A write capacity unit (WCU) represents one write per second, for an item up to 1 KB in size. 
+
+DynamoDB Auto Scaling:
+- Uses the AWS Application Auto Scaling service to dynamically adjust provisioned throughput capacity on your behalf, in response to actual traffic patterns.
+- Enables a table or a global secondary index to increase its provisioned read and write capacity to handle sudden increases in traffic, without throttling. 
+- When the workload decreases, Application Auto Scaling decreases the provisioned throughput so that you don't pay for unused provisioned capacity. 
+- You create a scaling policy for a table or a global secondary index.
+- The scaling policy specifies whether you want to scale read capacity or write capacity (or both), and the minimum and maximum provisioned capacity unit settings for the table or index.
+- The scaling policy also contains a target utilization:
+	- Target utilization = the percentage of consumed throughput vs provisioned throughput. 
+	- Adjusts the provisioned throughput of the table (or index) upward or downward in response to actual workloads, so that the actual capacity utilization remains at or near your target utilization. 
+	- The target utilization can be set between 20% and 90%.
+
+DynamoDB Accelerator (DAX):
+- A managed in-memory cache for DynamoDB.
+- Reduces the response times of eventually consistent read workloads by an order of magnitude from single-digit milliseconds to microseconds.
+- API-compatible with DynamoDB: requires minimal changes to use with an existing application.
+- Ideal for applications that need very fast or intensive reads on all or a subset of the data.
+- NOT ideal for applications that require strongly consistent reads or apps that are write-intensive.
+- A DAX cluster consists of one or more nodes in your VPC. 
+- Each node runs its own instance of the DAX caching software. 
+- One of the nodes serves as the primary node for the cluster. 
+- Additional nodes (if present) serve as read replicas.
+
+DynamoDB Global Tables:
+- Provide a fully managed solution for deploying a multiregion, multi-active database.
+- A DynamoDB global table consists of multiple replica tables (one per Region) that DynamoDB treats as a single unit.
+- All replicas are Read/Write.
+- Newly written items are usually propagated to all replica tables within a second. 
+- When doing a read, your application can choose between "eventually consistent" (default) and "strongly consistent" reads. 
+- If your application requires strongly consistent reads, it must perform all of its strongly consistent reads and writes in the same Region. DynamoDB does not support strongly consistent reads across Regions. 
+- If applications update the same item in different regions, the last writer wins.
+- Failover: You can apply custom business logic to determine when to redirect requests to other Regions. 
+
+DynamoDB Transactions:
+- You can group multiple actions together and submit them as a single all-or-nothing.
+- Idempotency: You can optionally include a client token when you make a TransactWriteItems call to ensure that the request is idempotent.
+- Making your transactions idempotent helps prevent application errors if the same operation is submitted multiple times due to a connection time-out or other connectivity issue. 
+- Transations in Global Tables:
+	- Provide atomicity, consistency, isolation, and durability (ACID) guarantees only within the region where the write is made originally.
+	- Are not supported across regions in global tables.
+
+DynamoDB Conditional Writes:
+- By default, the DynamoDB write operations (PutItem, UpdateItem, DeleteItem) are unconditional: Each operation overwrites an existing item that has the specified primary key. 
+- When you have multiple users attempt to modify the same item (for example: incrementing a counter), you want your write operation to succeed only if the item attributes still have the expected value that your user application read before from the Database.
+- DynamoDB supports conditional writes for these write operations: a conditional write succeeds only if the item attributes meet one or more expected conditions. 
+
+DynamoDB Access:
+- Based on AWS IAM.
+- You need to use permissions: user inline policy, user, group or role with attached policy.
+- Using a role is preferred as the credentials you receive when you assume a role are time-bound.
+- With roles, you can grant cross-account permissions.
+- DynamoDB does not support resource-based policies.
+
+DynamoDB Encryption At-Rest:
+- Supports Encryption at rest using KMS: CMKs can be AWS-owned, AWS-managed or Customer-managed.
+- Supports also encryption using the DynamoDB Encryption Client (software library). Can be used to:
+	- Encrypt some attributes in a table.
+	- Sign elements in a table to prevent alteration. The signature is added to the element as an attribute.
+
+DynamoDB Streams: 
+- captures a time-ordered sequence of item-level modifications in any DynamoDB table and stores this information in a log for up to 24 hours. 
+- Applications can access this log and view the data items as they appeared before and after they were modified, in near-real time. 
+- AWS maintains separate endpoints for DynamoDB and DynamoDB Streams.
+- Stream records are organized into groups, or shards.
+- Can be consumed either by:
+	- AWS Kinesis (DynamoDB Streams Kinesis Adapter). 
+	- Lamda trigger: AWS Lambda polls the stream and invokes your Lambda function synchronously when it detects new stream records. 
+
+DynamoDB Backup:
+Two types of backups:
+- on-demand backup: 
+	- full backups of your tables for long-term archival.
+	- All on-demand backups are cataloged, discoverable, and retained until explicitly deleted. 
+	- Can be scheduled using AWS Backup.
+- continuous automatic backups: 
+	- enables Point-in-time Restore (PITR),
+	- you can restore to any time between 5 minutes and 35 days.
+Both types support cross-region restores.
+
+NoSQL Workbench:
+- A client-side GUI application for NoSQL database development and operations.
+- A unified visual IDE tool that provides data modeling, data visualization, and query development features to help you design, create, query, and manage DynamoDB tables.
+- Available for Windows, macOS, and Linux. 
+
+============================
+
+AWS Database features summary:
+In Region Data availability:
+	- RDS: 		multi-AZ = 2 synchronous copies and 2 instances in 2 AZs. Automatic Failover.
+	- Aurora : 		6 synchronous copies and up to 16 instances in 3 AZs. Automatic Failover.
+	- DynamoDB: 	3 synchronous copies in 3 AZs. Automatic Failover.
+Cross-Region Data availability:
+	- RDS: 		Read Replicas. Up to 5 Asynchronous Read Replicas. Manual Failover.
+	- Aurora: 		Global Database = Up to 5 Asynchronous read-only secondary DB clusters in different Regions. RPO = 1 sec. RTO = 1mn. Manual Failover.
+	- DynamoDB: 	Global Tables = multiple read/write replica tables (one per Region). Eventually consistent. RPO = 1 sec. Automatic Failover can be implemented in the application logic.
+Authentication:
+	- RDS: 		SQL Password, AWS IAM (MySQL & PostgreSQL), Kerberos.
+	- Aurora: 		SQL Password, AWS IAM, Kerberos.
+	- DynamoDB: 	AWS IAM.
+Notifications:
+	- RDS: 		SNS.
+	- Aurora: 		SNS.
+	- DynamoDB: 	Kinesis Data Streams or Lambda triggers.
+
+Performance: RDS vs DynamoDB:
+- DynamoDB can handle higher rates for read/write operations (10K+ operations per second).
+- DynamoDB can scale with sharding. RDS has a single node/shard.
+
+============================
+
+Amazon ElastiCache:
+- Managed In-memory caching service.
+- Choice of engines: Memcached or Redis.
+
+Memcached:
+- simple features, 
+- multithreaded (sharding).
+- low maintenance,
+- easy horizontal scaling with Auto Discovery.
+
+Redis:
+- Has much more features than Memcached.
+- Nodes:
+	- A node is the smallest building block of an ElastiCache deployment. 
+	- Multiple types of cache nodes are supported (EC2 instance types).
+	- You can purchase nodes on a pay-as-you-go basis, or you can purchase reserved nodes at a much-reduced hourly rate.
+- A Redis shard:
+	- Called also a "node group" or "replication group".
+	- Is a grouping of 1 read/write primary node and up to 5 read-only replica nodes. 
+	- Read replicas use asynchronous replication. 
+	- A node group supports Multi-AZ: locating read replicas in multiple AZs with Automatic failover.
+- Redis clusters:
+	- A Redis (cluster mode disabled) cluster always has one shard. You can have a "write endpoint" and a "read endpoint".
+	- A Redis (cluster mode enabled) cluster can have 1–250 shards. Has a single endpoint called "configuration endpoint" that can provide to your application the primary and read endpoints for each shard in the cluster. 
+	- Every node within a cluster is the same instance type and runs the same cache engine. 
+- Supports Backup/Restore, snapshots.
+- Supports Transactions,
+- Supports Publish/subscribe,
+- Supports sorting/ranking, advanced data types,
+- Caching strategies include:
+	- Lazy loading: populate cache whenever data is read from the database. Pros: small cache size. Cons: latency on cache miss.
+	- Write-through strategy: adds data or updates data in the cache whenever data is written to the database. Pros: good read latency. Cons: cache size can get big, double write latency.
+- Redis data durability options:
+	- Daily automatic backups.
+	- Manual backups using Redis append-only file (AOF, see below).
+	- Setting up a Multi-AZ with Automatic Failover.
+- Data persistance:
+	- By default, the data in a Redis node resides only in memory and isn't persistent. 
+	- If you require data persistence, you can enable the Redis append-only file feature (AOF).
+	- When AOF is enabled, the node writes all of the commands that change cache data to an append-only file.
+	- When a node is rebooted and the cache engine starts, the AOF is "replayed." The result is a warm Redis cache with all of the data intact. 
+- Using Redis AUTH command can improve data security by requiring the user to enter a password before they are granted permission to execute Redis commands on a password-protected Redis server.
+- Supports Security Groups.
+- Supports IAM access security.
+
+
+============================
+
+Amazon RedShift:
+- Fully managed petabyte-scale relation data warehouse service.
+- HDD and SSD platforms.
+- Wide integrations with existing tools.
+- Architecture:
+	- Leader Node: Simple SQL end point, stores metadata, coordinates query execution.
+	- Compute Nodes: Local columnar storage, parallel execution of queries, loads, backups, restores and resizes.
+	- You select the instance types for your nodes.
+	- Lives inside a VPC.
+- Redshift workload management (WLM): enables users to manage priorities within workloads so that short, fast-running queries won't get stuck in queues behind long-running queries. WLM assigns the query to a queue according to the user's group.
+- Enhanced VPC Routing feature:
+	- If not enabled, Redshift routes traffic through the internet, including traffic to other services within the AWS network. 
+	- If enabled, Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your VPC.
+	- If enabled, you can use features such as ACLs, VPC endpoints, internet gateway, DNS.
+- Redshift Can load encrypted data from S3.
+- Supports Encryption at Rest and in Transit (SSL).
+- Supports VPC Security Groups.
+- Snapshots:
+	- Manual or Automated.
+	- Redshift stores these snapshots internally in Amazon S3
+	- Supports Cross-Region snapshots. 
+- Regulatory compliance.
+
+
+Amazon Redshift Spectrum:
+- Enables you to query and retrieve structured and semistructured data from files in Amazon S3 without having to load the data into Amazon Redshift tables.
+- Redshift Spectrum queries employ massive parallelism to execute very fast against large datasets. Much of the processing occurs in the Redshift Spectrum layer, and most of the data remains in Amazon S3.
+- Multiple clusters can concurrently query the same dataset in Amazon S3 without the need to make copies of the data for each cluster. 
+- Redshift Spectrum can potentially use thousands of instances to take advantage of massively parallel processing. 
+- You create Redshift Spectrum tables by defining the structure for your files and registering them as tables in an external data catalog. The external data catalog can be AWS Glue, the data catalog that comes with Amazon Athena, or your own Apache Hive metastore. 
+
+============================
+
+Amazon Neptune:
+- A fully managed graph database service.
+- Neptune is highly available, with read replicas, point-in-time recovery, continuous backup to Amazon S3, and replication across Availability Zones. 
+- Neptune provides data security features, with support for encryption at rest and in transit. 
+- Supports open graph APIs for both Gremlin and SPARQL.
+- Key Service Components
+	- Cluster volume: Neptune data is stored in the cluster volume, which consists of copies of the data across multiple Availability Zones in a single AWS Region. 
+	- Primary DB instance: Supports read and write operations, and performs all of the data modifications to the cluster volume. One per cluster.
+	- Neptune replica: Connects to the same storage volume as the primary DB instance and supports only read operations. Up to 15 Replicas per cluster.
+- Supports IAM database authentication.
+
+============================
+
+Amazon DocumentDB:
+- A fully managed database service for MongoDB-compatible databases in the cloud. 
+- Data is represented as a JSON document.
+- Key Service Components
+	- Cluster volume: DocumentDB data is stored in the cluster volume, which consists of 6 copies of the data across 3 Availability Zones in a single AWS Region. 
+	- Primary DB instance: Supports read and write operations, and performs all of the data modifications to the cluster volume. One per cluster.
+	- Read replica: Connects to the same storage volume as the primary DB instance and supports only read operations. Up to 15 Replicas per cluster.
+- Backup:
+	- The backup capability in Amazon DocumentDB enables point-in-time recovery for your cluster.
+	- RPO: 5mn.
+	- Retention up to 35 days.
+	- Stored in S3.
+- Supports encryption with AWS KMS.
+
+

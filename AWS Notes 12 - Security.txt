@@ -1,0 +1,138 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 12: Security ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+AWS Network Firewall:
+- A stateful, managed, network firewall and intrusion detection and prevention service that can filter traffic at the perimeter of your VPC.
+- Created in the VPC.
+- Uses an open source IPS (Suricata) for stateful inspection.
+- Deep packet inspection.
+- Can be combined with services and components that you use with your VPC, for example an internet gateway, a NAT gateway, a VPN, or a transit gateway.
+- To enable the firewall's protection, you modify your Amazon VPC route tables to send your network traffic through the Network Firewall firewall endpoints.
+- Needs dedicated subnet in each AZ.
+- Does not support VPC peering.
+
+
+===================================
+
+AWS Shield:
+- DDoS Protection
+- AWS Shield Standard: Free Service.
+- AWS Shield Advanced: Paid Service.
+- You can add protection for any of the following resource types:
+ 	- CloudFront distributions
+ 	- Route 53 hosted zones
+ 	- ELB load balancers
+ 	- EC2 Elastic IP addresses.
+ 	- AWS Global Accelerator accelerators
+
+
+===================================
+
+AWS WAF:
+- Web Application Firewall for CloudFront, API Gateway, Application Load Balancer, or AppSync GraphQL API. 
+- Web ACL: a set of rules to protect your AWS resources.
+- Each rule requires one top-level statement, which might contain nested statements at any depth, depending on the rule and statement type. 
+- Statements can be combined using AND, OR or NOT.
+- Examples of criteria in the statements:
+	- Scripts or SQL code that are likely to be malicious, like cross-site scripting (XSS).
+	- IP addresses or address ranges that requests originate from.
+	- Country or geographical location that requests originate from.
+	- Strings that appear in the request, like in the User-Agent header or the query string. Supports use of regular expressions (regex).
+- Each rule contains action to take if a web request meets the criteria:
+	- Count. You can insert custom headers into the request and you can add labels that other rules can match against. 
+	- Allow. You can insert custom headers into the request before forwarding it to the protected resource. 
+	- Block. You can customize the response. Default response is HTTP 403 (Forbidden).
+- Labels:
+	- A label is metadata that a rule can add to matching web requests. 
+	- Rules can also match against labels when they inspect web requests.
+	- Labels allow a matching rule to communicate results to the rules that are evaluated later in the same web ACL. 
+- You can use rules individually or in reusable rule groups. 
+- AWS Managed Rules and AWS Marketplace sellers provide managed rule groups for your use. 
+- You can add a scope-down statement inside some rules: narrows the scope of the requests that the rule evaluates. Can be also applied to rate-based rules.
+- Bot Control: helps you manage bot activity to your site by categorizing and identifying common bots.
+- For a CloudFront distribution, AWS WAF is available globally, but you must use the region US East (N. Virginia) for all of your work. 
+- Uses web ACL capacity units (WCU) to calculate and control the operating resources that are required to run your rules, rule groups, and web ACLs. 
+
+
+===================================
+
+AWS Firewall Manager:
+- Simplifies your administration and maintenance tasks across multiple accounts and resources for AWS WAF, AWS Shield Advanced, Amazon VPC security groups, and AWS Network Firewall. 
+- You set up your AWS WAF firewall rules, Shield Advanced protections, Amazon VPC security groups, and Network Firewall firewalls just once. The service automatically applies the rules and protections across your accounts and resources, even as you add new resources. 
+- Helps to protect all resources with specific tags.
+
+===================================
+
+Amazon Inspector:
+- Tests the network accessibility of your Amazon EC2 instances and the security state of your applications that run on those instances. 
+- Assesses applications for exposure, vulnerabilities, and deviations from best practices.
+- Assessments can be automated to integrate with deployment pipelines.
+- Optional agent on EC2 instances (Host IDS).
+
+
+Amazon GuardDuty
+- A continuous security monitoring service that analyzes and processes the following Data sources: 
+	- VPC Flow Logs, 
+	- CloudTrain Event Logs.
+	- CloudTrail management Events,
+	- Cloudtrail S3 Data Event,
+	- DNS logs. 
+- Uses threat intelligence feeds, such as lists of malicious IP addresses and domains, and machine learning to identify unexpected and potentially unauthorized and malicious activity within your AWS environment. 
+- This can include issues like escalations of privileges, uses of exposed credentials, or communication with malicious IP addresses, or domains. 
+- For example, GuardDuty can detect compromised EC2 instances serving malware or mining bitcoin. 
+- Also monitors AWS account access behavior for signs of compromise, such as unauthorized infrastructure deployments, like instances deployed in a Region that has never been used, or unusual API calls, like a password policy change to reduce password strength. 
+- Can trigger remediation actions.
+
+
+Amazon Detective:
+- Simplifies the process of investigating security findings and identifying the root cause. 
+- Analyzes trillions of events from multiple data sources such as VPC Flow Logs, AWS CloudTrail logs, and Amazon GuardDuty findings.
+- Automatically creates a graph model that provides you with a unified, interactive view of your resources, users, and the interactions between them over time.
+- You can explore this behavior graph to examine disparate actions such as failed logon attempts or suspicious API calls. 
+- You can also see how these actions affect resources such as AWS accounts and Amazon EC2 instances. 
+- Maintains up to a year of historical event data.
+
+
+Amazon Macie:
+- A fully managed data security and data privacy service that uses machine learning and pattern matching to help you discover, monitor, and protect your sensitive data in AWS. 
+- Automates the discovery of sensitive data, such as personally identifiable information (PII) and financial data, to provide you with a better understanding of the data that your organization stores in Amazon S3. 
+- Macie also provides you with an inventory of your S3 buckets, and it automatically evaluates and monitors those buckets for security and access control. 
+- Within minutes, Macie can identify and report overly permissive or unencrypted buckets for your organization. 
+
+
+AWS Security Hub:
+- Provides you with a comprehensive view of your security state in AWS.
+- Helps you check your environment against security industry standards and best practices.
+- Collects security data from across AWS accounts, services, and supported third-party partner products.
+- Consumes, aggregates, organizes, and prioritizes findings from AWS services that you have enabled, such as Amazon GuardDuty, Amazon Inspector, Amazon Macie and AWS partner security products. 
+- Helps you analyze your security trends.
+- Identify the highest priority security issues. 
+- Correlates findings across providers to prioritize the most important ones. 
+- Supports integration with Amazon EventBridge. To automate remediation of specific findings, you can define custom actions to take when a finding is received. 
+
+
+====================================
+
+
+

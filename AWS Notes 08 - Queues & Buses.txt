@@ -1,0 +1,134 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 08: Queues & Buses ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+Amazon Simple Queue Service (SQS):
+- offers a secure, durable, and available hosted queue that lets you integrate and decouple distributed software systems and components. 
+- Push-pull mechanism.
+- You control who can send messages to and receive messages from an Amazon SQS queue.
+- Two Queue types:
+	- Standard: Best effort ordering, at-least-once message delivery, unlimited throughput.
+	- FIFO: FIFO ordering, exactly-once message processing, limited throughput: 300 API calls per second, up to 10 messages per API call. So max is 3,000 messages per second.
+- Messages:
+	- Each message gets a Message ID.
+	- You can use message attributes to attach custom metadata to messages. 
+	- Max size: 256 KB.
+	- A message can be a pointer to an S3 or DynamoDB object.
+	- Messages are stored on multiple servers.
+	- Retention period: 1mn to 14 days. Default is 4 days.
+	- Messages can be protected by Server-Side Encryption using KMS.
+- Concurrency:
+	- Multiple producers and consumers can use the same queue at the same time. 
+	- When a message is received/collected by a consumer, it remains in the queue.
+	- To prevent other consumers from processing the message again, Amazon SQS sets a visibility timeout, a period of time during which Amazon SQS prevents other consumers from receiving and processing the message. Can be 0 sec to 12 hours. Default is 30 seconds. The consumer should delete the message from the queue after processing it.
+- Short Polling & Long Polling:
+	- SQS provides short polling (no wait) and long polling (with wait) to receive messages from a queue.
+	- By default, queues use short polling.
+- Short Polling:
+	- The ReceiveMessage request queries only a subset of the servers (based on a weighted random distribution) to find messages that are available to include in the response. 
+	- Amazon SQS sends the response right away, even if the query found no messages.
+	- To set Short polling: either in the queue parameter (WaitTimeSeconds = 0) or the request parameter (ReceiveMessageWaitTimeSeconds = 0).
+- Long Polling:
+	- The ReceiveMessage request queries all of the servers for messages. 
+	- SQS sends a response after it collects at least one available message, up to the maximum number of messages specified in the request. 
+	- SQS sends an empty response only if the polling wait time expires. 
+	- The maximum long polling wait time is 20 seconds.
+	- Long polling helps reduce the cost of using Amazon SQS by eliminating the number of empty responses.
+- Delay queues let you postpone the delivery of new messages to a queue for a number of seconds.
+- Message timers let you specify an initial invisibility period for a message added to a queue.
+- A dead-letter queue is a queue that one or more source queues can use for messages that are not consumed successfully. 
+- Supports SSE using KMS CMKs.
+- Supports anonymous access.
+- Lambda Triggers:
+	- Lambda polls the queue and invokes your Lambda function synchronously with an event that contains queue messages.
+	- Lambda reads messages in batches and invokes your function once for each batch: the event that is passed to your function contains all read messages.
+	- You can set the batch size: number of messages that Lambda will collect at once.
+	- You can set the batch window: period that Lambda should wait to collect the messages before invoking your function. Max = 5mn.
+	- Lambda continues to poll messages from the SQS standard queue until batch window expires, the payload limit is reached or full batch size is reached. 
+	- When your function successfully processes a batch, Lambda deletes its messages from the queue. 
+
+
+=========================================
+
+Amazon Simple Notification Service (SNS):
+- A managed service that provides message delivery from publishers to subscribers (also known as producers and consumers). 
+- Push-push mechanism.
+- Publishers communicate asynchronously with subscribers by sending messages to a topic, which is a logical access point and communication channel. 
+- Each subscriber receives its own copy of each published message.
+- Two types of subscribers:
+	- Application to Application subscribers: Kinesis Data Firehose, SQS, AWS Lambda and HTTP/S. Through Kinesis Data Firehose, you can fan out SNS notifications to S3, Redshift and 3rd party services.
+	- Application to Person subscribers: email, mobile push notifications, and SMS. 
+- A subscriber can assign a filter policy to the topic subscription. Can filter on JSON fields.
+- Two Topic types:
+	- Standard: use when message delivery order and possible message duplication are not critical. 
+	- FIFO: use to ensure strict message ordering, to define message groups, and to prevent message duplication. Only Amazon SQS FIFO queues can subscribe to a FIFO topic.
+- Published messages are stored across multiple, geographically separated servers and data centers.
+- If a subscribed endpoint isn't available, Amazon SNS runs a delivery retry policy.
+- To preserve any messages that aren't delivered before the delivery retry policy ends, you can create a dead-letter queue in SQS.
+- Message attributes let you provide any arbitrary metadata about the message.
+- You can choose to deliver raw messages (not wrapped in a structure).
+- Supports Encryption at rest.
+
+=========================================
+
+Amazon MQ:
+- A managed message broker service that makes it easy to migrate to a message broker in the cloud. 
+- Supports Apache ActiveMQ and RabbitMQ engine types. 
+- Supported APIs and protocols: JMS, AMQP 0-9-1, AMQP 1.0, MQTT, OpenWire, and STOMP. 
+
+=========================================
+
+Amazon EventBridge:
+- A serverless event bus service that makes it easy to connect your applications with data from a variety of sources. 
+- Allows you to build event driven architectures, which are loosely coupled and distributed. 
+- Delivers a near real-time stream of events from:
+	- System events that describe changes in AWS resources.
+	- Events from you own applications.
+	- SaaS partners like Salesforce.com.
+- Events:
+	- Events in Amazon EventBridge are represented as JSON objects. 
+	- All events have a similar structure, and the same top-level fields. 
+	- A target receives events in JSON format. 
+- Event Buses:
+	- Streams of events are collected in event buses. 
+	- CloudWatch Events: one event bus that is included by default for system events from AWS services.
+- Targets:
+	- Supported targets include: EC2, ECS, Lambda, Batch, Step Functions, SNS, SQS, Streams in Kinesis Data Streams and Kinesis Data Firehose.
+	- A rule's targets must be in the same Region as the rule.
+- Rules:
+	- A rule matches incoming events and routes them to one or more targets for processing. 
+	- A single rule can route to multiple targets, all of which are processed in parallel. 
+	- A rule can customize the JSON sent to the target.
+- To preserve any messages that aren't delivered before the delivery retry policy ends, you can create a dead-letter queue in SQS.
+
+
+=========================================
+
+Push/Pull Mecanism Comparison:
+- SNS:			push-push.
+- SQS: 		push-pull.
+- MQ:			push-pull.
+- EventBridge:	push-push.
+
+
+

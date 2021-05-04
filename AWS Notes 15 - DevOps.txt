@@ -1,0 +1,111 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	   *** Note 15: DevOps ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+AWS Signer:
+- A fully managed code-signing service to ensure the trust and integrity of your code. 
+- Organizations validate code against a digital signature to confirm that the code is unaltered and from a trusted publisher.
+- Manages the code-signing certificate public and private keys and enables central management of the code-signing lifecycle. 
+- With Code Signing for AWS Lambda, you can ensure that only trusted code runs in your Lambda functions. 
+- With Code Signing for AWS IoT, you can sign code that you create for IoT devices supported by Amazon FreeRTOS and AWS IoT device management. 
+- You use ACM to create an ACM certificate or import a third-party certificate that you use for signing. 
+
+===================================
+
+AWS CodeCommit:
+- A version control service hosted by AWS that hosts private Git repositories.
+- Can store documents, source code, and binary files.
+- Supports the standard functionality of Git.
+
+===================================
+
+Amazon CodeGuru Reviewer:
+- An automated code review service that uses program analysis and machine learning to detect common issues and recommend fixes.
+- Supports Java and Python. 
+- You can associate repositories in your AWS account with CodeGuru Reviewer.
+- Creates a service-linked role that allows it to analyze code in all pull requests created after the association is made with CodeCommit.
+
+===================================
+
+AWS CodeBuild:
+- A fully managed build service in the cloud that compiles your source code, runs unit tests, and produces artifacts that are ready to deploy.
+- Provides prepackaged build environments for popular programming languages.
+- A build environment represents a combination of operating system, programming language runtime, and tools that CodeBuild uses to run a build. 
+- You can store the source code to be built and the build specification in a CodeCommit repository.
+- You can use CodeBuild directly with CodeCommit, or you can incorporate both CodeBuild and CodeCommit in a continuous delivery pipeline with CodePipeline. 
+- If there is any build output, the build environment uploads its output to an S3 bucket. 
+
+===================================
+
+AWS CodeDeploy:
+- A deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
+- You can deploy a nearly unlimited variety of application content, including: Code, Lambda functions, Web and configuration files, Executables, Packages, Scripts, Multimedia files, …etc.
+- Can deploy from Amazon S3 buckets, GitHub repositories, or Bitbucket repositories.
+- For an in-place deployment, CodeDeploy performs a rolling update across Amazon EC2 instances. 
+- You can automatically or manually stop and roll back deployments if there are errors. 
+
+Application Deployment strategies:
+- In-place deployment: The application on each instance in the deployment group is stopped, the latest application revision is installed, and the new version of the application is started and validated. 
+- Blue/green (or A/B) deployment: 
+	- Two identical production environments work in parallel.
+	- One environment  is the currently-running production environment receiving all user traffic (Blue environment).
+	- The other environment is a clone of it, but idle (Green).
+	- Both use the same database back-end and app configuration:
+	- The new version of the application is deployed in the green environment and tested for functionality and performance.
+	- Once the testing results are successful, application traffic is routed from blue to green. Green then becomes the new production.
+- Canary deployment:
+	- you deploy a new application code in a small part of the production infrastructure.
+	- Only a few users are routed to it. This is why it is called Canary deployment as it refers to the canary birds used by miners to detect toxic gaz. It's actually testing on real users.
+	- Users are selected carefully: low impact users or users that are ready to share feedback. 
+	- If no errors reported, the new version can gradually roll out to the rest of the infrastructure.
+- Rolling deployment:
+	- an application’s new version gradually replaces the old one.
+	- The actual deployment happens over a period of time.
+	- During that time, new and old versions will coexist without affecting functionality or user experience. 
+	- Unlike the Canary deployment strategy, the phasing is based on parts of the infrastructure and not on groups of users.
+
+===================================
+
+AWS CodePipeline:
+- A continuous delivery service you can use to model, visualize, and automate the steps required to release your software.
+- Continuous Integration:
+	- A software development practice where members of a team use a version control system and frequently integrate their work to the same location, such as a main branch.
+	- Each change is built and verified to detect integration errors as quickly as possible.
+	- Continuous integration is focused on automatically building and testing code.
+- Continuous Delivery:
+	- A software development methodology where the release process is automated.
+	- Every software change is automatically built, tested, and deployed to production.
+	- Before the final push to production, a person, an automated test, or a business rule decides when the final push should occur. 
+- Supported code source providers: CodeCommit, GitHub, BitBucket, S3 and ECR.
+- Supported deployment targets: S3, CloudFormation, ECS, Beanstalk, OpsWorks, AppConfig, CodeDeploy.
+- Deployment to EC2 instances, Lambda function and Containers can be done through AppConfig or CodeDeploy.
+
+
+===================================
+
+AWS AppConfig:
+- A capability of AWS Systems Manager, to create, manage, and quickly deploy application configurations.
+- You can use AWS AppConfig with applications hosted on Amazon Elastic Compute Cloud (Amazon EC2) instances, AWS Lambda, containers, mobile applications, or IoT devices. 
+
+
+

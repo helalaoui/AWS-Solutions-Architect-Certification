@@ -1,0 +1,141 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	*** Note 14: Governance & Architecture ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: Mar-2021
+= Last Modified:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: 29-Apr-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+
+=== IMPORTANT FOR THE CERTIFICATION EXAM QUESTIONS ===
+AWS' definition of HA & FT:
+- High Availability (HA): the system is up and available but it might perform in a degraded state (below SLA) in case of a component failure.
+- Fault Tolerance (FT): the user does not experience any impact from a fault. The SLA is always met.
+
+
+=====================================
+
+AWS Well-Architected Framework:
+- Best practices developed by AWS Solutions Architects based on their years of experience building solutions across a wide variety of businesses.
+- Provides a consistent approach for evaluating systems against the qualities that are expected from modern cloud-based systems.
+- Based on the state of your architecture, the framework suggests improvements that you can make to better achieve those qualities. 
+- Provides best practices for designing and operating reliable, secure, efficient, and cost-effective systems in the cloud.
+
+
+AWS Well-Architected Tool (AWS WA Tool):
+- A service that provides a consistent process for measuring your architecture using AWS best practices. 
+- Assists with documenting the decisions that you make.
+- Provides recommendations for improving your workload based on best practices.
+- Guides you in making your workloads more reliable, secure, efficient, and cost-effective.
+- AWS customers use AWS WA Tool to document their architectures, provide product launch governance, and to understand and manage the risks in their technology portfolio. 
+- End users can quickly deploy only the approved IT services they need, following the constraints set by your organization. 
+
+=====================================
+
+AWS Organizations:
+- Account management service that enables you to consolidate multiple AWS accounts into an organization that you create and centrally manage.
+- Includes account management and consolidated billing capabilities.
+- You can group your accounts into Hierarchical organizational units (OUs) and attach different access policies to each OU. 
+- Root: the parent container for all the accounts for your organization.
+- Organization unit (OU): a container for accounts within the organization hierarchy. 
+- An OU also can contain other OUs, enabling you to create a hierarchy/tree.
+- Accounts are the leaves of the tree.
+- You have one Management Account and the rest are Member Accounts.
+- The Management Account (previously called Master Account) is the account that you use to create and manage the organization.
+- When you attach a policy to one of the nodes in the hierarchy, it flows down and affects all the branches (OUs) and leaves (accounts) beneath it.
+- Invitation: the process of asking another account to join your organization. Can be issued only by the organization's management account. 
+- AWS Organizations has two available feature sets:
+	- Consolidated Billing features. Provides also basic management tools.
+	- All features: default and preferred way to work with AWS Organizations. It includes also all the Consolidated Billing features. 
+- Consolidated Billing:
+	- You can use the consolidated billing feature in AWS Organizations to consolidate billing and payment for multiple AWS accounts.
+	- You can combine the usage across all accounts in the organization to share the volume pricing discounts, Reserved Instance discounts, and Savings Plans.
+	- The management account of an organization can turn off Reserved Instance (RI) discount and Savings Plans discount sharing for any accounts in that organization. 
+- Free service.
+
+Service Control Policies (SCPs): 
+- Specify the maximum permissions for member OUs or accounts in the organization.
+- No permissions are granted by an SCP. An SCP defines a guardrail, or sets limits, on the actions that the account's administrator can delegate to the IAM users and roles in the affected accounts. 
+- The administrator must still attach identity-based or resource-based policies to IAM users or roles, or to the resources in your accounts to actually grant permissions. 
+- The effective permissions are the logical intersection between what is allowed by the SCP and what is allowed by the IAM and resource-based policies. 
+- An SCP restricts permissions for IAM users and roles in member accounts, including the member account's root user.
+- An SCP can be configured either as:
+	- A deny list – actions are allowed by default, and you specify what services and actions are prohibited
+	- An allow list – actions are prohibited by default, and you specify what services and actions are allowed
+- By default, AWS Organizations attaches an AWS managed SCP named FullAWSAccess to the organization's root and every OU and account when it's created: by default all permissions are allowed.
+- SCPs do NOT affect:
+	- Users or roles in the management account. 
+	- Users or roles from accounts outside the organization. Use case: cross-account access using resource-based policies.
+	- Service-linked roles. 
+
+
+=====================================
+
+AWS Service Catalog:
+- Enables organizations to create and manage catalogs of IT services that are approved for AWS. 
+- IT services (called Products) can include everything from virtual machine images, servers, software, and databases to complete multi-tier application architectures. 
+- You create a product by importing an AWS CloudFormation template. 
+- A "Provisioned Product" is a CloudFormation stack.
+- A Portfolio is a collection of products, together with configuration information.
+- When a user launches a product that has an IAM role assigned to it, AWS Service Catalog uses the role to launch the product's cloud resources using AWS CloudFormation. 
+
+=====================================
+
+AWS Control Tower:
+- Orchestration layer that facilitates account deployment and account governance. 
+- Provides the easiest way to set up and govern a secure, compliant, multi-account AWS environment based on best practices established by working with thousands of enterprises. 
+- With AWS Control Tower, end users on your distributed teams can provision new AWS accounts quickly. Meanwhile your central cloud administrators know that all accounts are aligned with centrally established, company-wide compliance policies. 
+- AWS Control Tower offers reusable reference architectures for best practices.
+- A Landing Zone:
+	- A well-architected, multi-account AWS environment that's based on security and compliance best practices. 
+- Guardrail:
+	- A high-level rule that provides ongoing governance for your overall AWS environment. 
+	- Can be preventive or detective.
+	- Guardrails guidance can be: mandatory, strongly recommended, or elective.
+- Account Factory:
+	- A configurable account template that helps to standardize the provisioning of new accounts with pre-approved account configurations. 
+	- AWS Control Tower offers a built-in Account Factory.
+
+=====================================
+
+AWS Resource Access Manager (AWS RAM):
+- Lets you share your resources with any AWS account or through AWS Organizations.
+- If you have multiple AWS accounts, you can create resources centrally and use AWS RAM to share those resources with other accounts. 
+- When you share a resource with another account, then that account is granted access to the resource. Any policies and permissions that apply to the account with which you have shared the resource apply to the shared resource. 
+- When the owner of a resource shares it with your account, you can access the shared resource just as you would if it was owned by your account. 
+- To be able to share resources within an AWS Organization, the management account should enable resource sharing.
+- To start sharing a resource, you create a "Resource Share", add the resources to share, and specify the principals with whom they are to be shared. 
+
+=====================================
+
+AWS Artifact:
+- Provides on-demand downloads of AWS security and compliance documents, such as AWS ISO certifications, Payment Card Industry (PCI), and Service Organization Control (SOC) reports. 
+
+
+=====================================
+
+Tags:
+- Up to 50 tags.
+- Key: Up to 127 chars
+- Value: Up to 255 chars.
+- In IAM policies, you can include condition keys, such as aws:RequestTag and aws:TagKeys, which will prevent resources from being created if specific tags or tag values are not present.
+
+
+
+
+
