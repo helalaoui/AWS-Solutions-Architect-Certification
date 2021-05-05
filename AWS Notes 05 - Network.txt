@@ -329,10 +329,11 @@ NAT Gateway:
 - You cannot associate a security group with a NAT gateway. 
 - Cannot be used by resources through a VPC peering or a S2S VPN connection.
 - You can have multiple NAT Gateways per VPC. Separate per Subnet.
+- Cannot filter traffic based on DNS names or URLs.
 
 
 NAT Instance: 
-- An EC2 instance with a NAT software. 
+- An EC2 instance with a NAT software (e.g. Squid Proxy). 
 - You create and manage the instance and NAT software.
 - You need to disable Source/Destination check on the network interface.
 - Subnet failover to another NAT instance is supported. you need to use scripts to manage failover, 
@@ -343,6 +344,7 @@ NAT Instance:
 - Supports manual port forwarding, bastion server, CloudWatch alarms.
 - Supports Public IP addresses and Elastic IP Addresses. Can be changed.
 - Private IP manually assigned.
+- You can use a proxy software like Squid (open-source) to filter the traffic based on DNS names.
 
 ============================
 
