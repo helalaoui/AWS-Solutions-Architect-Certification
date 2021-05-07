@@ -55,10 +55,11 @@ AWS WAF:
 - Each rule requires one top-level statement, which might contain nested statements at any depth, depending on the rule and statement type. 
 - Statements can be combined using AND, OR or NOT.
 - Examples of criteria in the statements:
-	- Scripts or SQL code that are likely to be malicious, like cross-site scripting (XSS).
+	- Scripts or SQL code that are likely to be malicious, like cross-site scripting (XSS) or SQL injection.
 	- IP addresses or address ranges that requests originate from.
 	- Country or geographical location that requests originate from.
 	- Strings that appear in the request, like in the User-Agent header or the query string. Supports use of regular expressions (regex).
+	- Request size limit.
 - Each rule contains action to take if a web request meets the criteria:
 	- Count. You can insert custom headers into the request and you can add labels that other rules can match against. 
 	- Allow. You can insert custom headers into the request before forwarding it to the protected resource. 
@@ -103,6 +104,7 @@ Amazon GuardDuty
 - For example, GuardDuty can detect compromised EC2 instances serving malware or mining bitcoin. 
 - Also monitors AWS account access behavior for signs of compromise, such as unauthorized infrastructure deployments, like instances deployed in a Region that has never been used, or unusual API calls, like a password policy change to reduce password strength. 
 - Can trigger remediation actions.
+- Supports a Trusted IP list and multiple Threat lists (lists of known malicious IPs).
 
 
 Amazon Detective:

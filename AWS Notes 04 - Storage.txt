@@ -101,7 +101,7 @@ Elastic File System (EFS):
 - Stored redundantly across multiple AZs,
 - Can be accessed concurrently by 1000s of EC2 instances from different AZs.
 - On-premise supported via direct connect.
-- Encryption of data at rest and in transit are both supported.
+
 - Two Storage classes:
 	- Standard storage class: for frequently accessed files. Single-digit latencies on average.
 	- Infrequent Access (IA) storage class is a lower-cost storage class that's designed for storing long-lived, infrequently accessed files cost-effectively. Double-digit latencies on average.
@@ -161,6 +161,15 @@ EFS File-level permissions:
 - When an NFS client mounts an EFS file system without using an access point, the user ID and group ID provided by the client is trusted. You can use EFS access points to override user ID and group IDs used by the NFS client. 
 - EFS file access authorization is based on the UNIX-like numeric user and group identifiers provided by the NFS client.
 - For non-root users to modify the file system, the root user must explicitly grant them access. 
+
+EFS Encryption:
+- Encryption of data at rest (using KMS) and in transit are both supported.
+- You cannot change an existing EFS to use encryption.
+- You can use the elasticfilesystem:Encrypted condition key in IAM identity-based policies to control whether users can create encrypted/unencrypted EFS file systems.
+- You can define SCPs inside AWS Organizations to enforce EFS encryption for all AWS accounts in your organization. 
+- Data and metadata are automatically encrypted before being written to the file system.
+- Metadata is encrypted using an AWS-managed CMK.
+- File data is encrypted using an AWS-managed CMK or a customer-managed CMK. 
 
 ==================================
 
@@ -264,9 +273,19 @@ S3 Bucket options:
 - Requester pays for the data transfers.
 - Notification.
 
-S3 Bucket Policies:
-- Permissions and ACL.
-- Time-limited access to objects.
+S3 Access security:
+- You can use Bucket policies (IAM resource policies) or ACLs.
+- ACLs:
+	- Each bucket and object has an ACL attached to it as a subresource.
+	- An ACL defines which AWS accounts or groups are granted access and the type of access. 
+	- ACLs grant basic read/write permissions to other AWS accounts. 
+	- You can grant permissions only to other AWS accounts, but not to users in the same account.
+	- ACLs are very limited options. It's better to use Bucket policies.
+- Main use cases for ACLs:
+	- An object ACL is the only way to manage access to objects that are not owned by the bucket owner.
+	- Manage permissions at the object level for a large number of objects (Policies are limited in size).
+	- Use bucket ACL to grant write permission to the Amazon S3 Log Delivery group to write access log objects to your bucket.
+
 
 S3 Bucket access URL:
 - Direct Access: Amazon S3 supports two URL styles to access a bucket directly:
@@ -384,6 +403,11 @@ S3 Object Lock:
 - Two methods for locking in S3 Glacier:
 	- Vault Access policy: can be modified.
 	- Vault Lock policy: can be locked for compliance.
+- S3 Object Legal Hold:
+	- Prevents an object version from being overwritten or deleted.
+	- Doesn't have an associated retention period and remains in effect until removed.
+	- Legal holds can be freely placed and removed by any user who has the s3:PutObjectLegalHold permission. 
+
 
 S3 Monitoring options:
 - CloudTrail Logs: 
@@ -420,6 +444,8 @@ S3 Glacier:
 	- Bulk: 24 hours.
 - Supports retrieval policies (limits).
 - Supports a Vault Lock policy.
+- All data is encrypted in Glacier.
+
 
 S3 Provisioned Capacity Units:
 - Provisioned Capacity guarantees that your retrieval capacity for Expedited retrievals will be available when you need it. 

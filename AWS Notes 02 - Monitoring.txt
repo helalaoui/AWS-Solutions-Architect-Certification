@@ -187,9 +187,24 @@ AWS Config:
 =================================
 
 Trusted Advisor:
-- help you reduce cost, increase performance, and improve security by optimizing your AWS environment. 
-- Can Recommend Reserved Instances for EC2 for example.
-- Provides also information on service limits of AWS services.
+- Inspects your AWS environment, and then makes recommendations on:
+	- Cost optimization. Examples:
+		- EC2 Reserved Instances optimization.
+		- Low utilization Amazon EC2 instances.
+		- Idle load balancers.
+		- RDS idle DB instances.
+	- Fault Tolerance. Examples:
+		- EBS snapshots.
+		- EC2 availability zone balance.
+	- Performance. Examples:
+		- High utilization of EC2 CPU or EBS IOPS.
+		- CloudFront cache hit ratio.
+	- Security. Examples:
+		- Security groups - Unrestricted access (0.0.0.0/0).
+		- S3 bucket permissions.
+		- IAM password policy and access key rotation.
+	- Service Limits: Checks whether your account approaches or exceeds the limits (quotas) for AWS services and resources. 
+- Some checks are free and other are paid.
 
 
 =================================

@@ -163,6 +163,14 @@ ELB with Auto Scaling Group:
 - You can also optionally enable Auto Scaling to replace instances based on health checks provided by the ELB.
 
 
+ELB Security policies:
+- The SSL negotiation configuration in ELB is known as a security policy,
+- A security policy is a combination of protocols and ciphers. 
+- For ALB:
+	- You can use either the default security policy or one of the other predefined security policies (to disable for example an SSL version).
+	- You cannot create a custom security policy.
+- For other ELBs, you can create a custom security policy.
+
 ===============================
 
 API Gateway:
@@ -393,6 +401,18 @@ AWS Lambda@Edge:
 	- When CloudFront receives a response from the origin (origin response)
 	- Before CloudFront returns the response to the viewer (viewer response)
 
+CloudFront logging: Two ways to log the requests that come to your distributions:
+- Standard logs (access logs):
+	- Provide detailed records about every request that’s made to a distribution.
+	- Delivered to the Amazon S3 bucket of your choice.
+	- Free but you pay for the S3 storage.
+- Real-time logs:
+	- Provide sampled information about requests made to a distribution,
+	- Delivered in near real time (within seconds).
+	- You can choose the sampling rate,
+	- You can also choose the specific fields to log.
+	- Delivered to the data stream of your choice in Amazon Kinesis Data Streams.
+	- CloudFront charges for real-time logs, in addition to the charges you incur for using Kinesis Data Streams. 
 
 CloudFront VOD:
 - To deliver video on demand (VOD) streaming with CloudFront, use the following services:

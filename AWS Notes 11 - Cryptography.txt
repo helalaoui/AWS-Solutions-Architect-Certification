@@ -120,6 +120,10 @@ CMK Authorization:
 - Key administrator: manages the key but cannot use it.
 - Key User: can use the key.
 
+KMS Service Access: 
+- Access to KMS uses a public endpoint (Internet).
+- If you want avoid traversing Internet to communicate with KMS, use a VPC Endpoint and enable the Private DNS Name option.
+
 =======================
 
 AWS Certificate Manager (ACM):

@@ -93,7 +93,10 @@ IAM Permissions:
 - let you specify access to AWS resources.
 - are the building blocs of policies.
 - To grant permissions to IAM entities (users and roles) you put the permissions in a policy and then attach the policy to the entity.
-- All actions are implicitly denied unless explicitly allowed by a policy.
+- Permissions decision tree:
+	- Firsty looks for explicit denies,
+	- Secondly looks for explicit allows,
+	- Lastly denies any action that is not explicitly allowed.
 
 Policy Statement elements:
 - Sid (statement ID) is an optional identifier that you provide for the policy statement. 
@@ -165,7 +168,7 @@ Cross-Account Access:
 - Using roles for Cross-account access:
 	- You need to create a role in the trusting account that has the required permissions on the target resource.
 	- In order to allow a user in the trusted account to assume this role in the trusting account:
-		- In the trusting account: the trusted account must be listed a trusted entity (Trust Relationship). You grant the trusted user or the whole trusted account the permission to assume this role.
+		- In the trusting account: the trusted user or the whole trusted account is granted the permission to assume this role.
 		- In the trusted account: a policy must allow your user to assume that role in the trusting account.
 - Using Resource-based policies for Cross-account access:
 	- Supported only for some AWS services like S3, SNS and SQS.
@@ -288,15 +291,27 @@ Amazon Cognito:
 - Identity management solution for B2C or B2B apps for their customers—so a customer-targeted IAM and user directory solution. 
 - This fully managed service scales to support hundreds of millions of users. 
 
+
 Cognito User Pools:
-- A user pool is a user directory in Amazon Cognito. 
-- With a user pool, your users can sign up and sign in to your web or mobile app through Amazon Cognito.
-- Users can sign in through social identity providers like Google, Facebook, Amazon, or Apple, and through SAML identity providers.
-- A built-in, customizable web UI to sign in users.
-- User directory management and user profiles.
+- With Cognito user pool, your users can sign up and sign in to your web or mobile app.
+- Your app users can sign in:
+	- Either directly through a user pool,
+	- or Federate through a third-party identity provider (IdP).
+- User Pool:
+	- A user pool is a user directory in Amazon Cognito User Pools. 
+	- provides User directory management and user profiles.
+- Supported federated Identity Providers (IdPs):
+	- Social IdPs: Google, Facebook, Amazon and Apple.
+	- OIDC IdPs.
+	- SAML IdPs.
+- Includes a built-in, customizable web UI to sign in users.
 - Security features such as multi-factor authentication (MFA), checks for compromised credentials, account takeover protection, and phone and email verification.
-- After successfully authenticating a user, Amazon Cognito issues JSON web tokens (JWT) that you can use to secure and authorize access to your own APIs, or exchange for AWS credentials. 
-- Amazon Cognito is a service that helps you manage identities for your customer facing applications; it is not a supported identity source in AWS SSO.
+- After successfully authenticating a user, Amazon Cognito User Pools issues JSON web tokens (JWT).
+- Cognito User Pools tokens can be used to:
+	- Secure and authorize access to your own APIs,
+	- Exchange for AWS credentials. 
+	- Directly in API calls to AWS API Gateway.
+	- Directly in requests sent to AWS AppSync.
 - Cognito User pools use cases:
 	- Design sign-up and sign-in webpages for your app.
 	- Access and manage user data.
@@ -312,12 +327,17 @@ Amazon Cognito identity pools (federated identities):
 	- Amazon Cognito User Pools.
 	- OIDC IdPs
 	- SAML IdPs
-- When your app authenticates to the IdP, it gets a token from this IdP and then can exchange it for temporary credentials to access AWS services.
+- Auth Flow:
+	- Your app authenticates to the IdP and gets a token from this IdP.
+	- Your app calls GetId to Cognito Identity Pools which returns an identity.
+	- Your app calls GetCredentialsForIdentity to Cognito Identity Pools which calls AWS STS on behalf of the user and returns the STS token to your app.
 - You can use IAM policies to control access to AWS resources through Amazon Cognito identity pools based on user attributes (ABAC). 
 - You can map attributes, within providers’ access and ID tokens or SAML assertions, to tags that can be referenced in the IAM permissions policies. 
 - Cognito identity pools use cases:
 	- Give your users access to AWS resources, such as an S3 bucket or a DynamoDB table.
 	- Generate temporary AWS credentials for unauthenticated users.
+- You need to configure your SAML identity provider to have Amazon Cognito as a relying party.
+
 
 ===========================
 
@@ -334,19 +354,23 @@ Amazon Cloud Directory:
 Comparison of Identity Solutions:
 
 OIDC  |
-           |==============> IAM Federation ==========> IAM Authorization (Console or API Token).
-SAML |
+      |==============> IAM Federation =============> AWS IAM Authorization (Console or API Token from STS).
+SAML  |
 
 
-SSO Directory    |                                                       |===> IAM Authorization (Console or Token download).
-Active Directory  |======> AWS SSO =========> |===> SAML for built-in SaaS applications.
-SAML                 |                                                        |===> SAML for custom application.
+SSO Directory     |                      |=========> AWS IAM Authorization (Console or Token download).
+Active Directory  |=====> AWS SSO ======>|=========> SAML for built-in SaaS applications.
+SAML              |                      |=========> SAML for custom application.
 
+Cognito User Pools Directory |
+Social IdP                   |                                |==> JSON web tokens (JWT)
+OIDC                         |===> Cognito User Pools ===>|
+SAML                         |                                |==> AWS IAM Authorization (API Token from STS)
 
 Cognito User Pools |
-Social IdP                |
-OIDC                       |====> Cognito Identity Pools ====> IAM Authorization (API Token)
-SAML                      |
+Social IdP         |                                
+OIDC               |===> Cognito Identity Pools =====> AWS IAM Authorization (API Token from STS)
+SAML               |                                
 
 
 

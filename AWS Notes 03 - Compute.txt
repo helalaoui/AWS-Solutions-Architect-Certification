@@ -67,11 +67,13 @@ EC2 Storage:
 	- Lower latency
 	- No data consistency after the VM is terminated (but is consistent on reboot).
 	- Not resizeable.
+	- AWS does not encrypt these volumes. You need to use OS-level or Filesystem-level encryption.
 - EBS volume:
 	- Volume mapped to an EBS volume.
 	- Consistent even when the EC2 instance is stopped/terminated.
 	- You can change size and type.
 - For both root and data volumes on EBS, to attach the volumes to an instance, these need to be in the same AZ as the instance.
+	- Volumes can be encrypted by EBS.
 
 EC2 AMIs:
 - Amazon Machine Image.
@@ -383,7 +385,7 @@ Lambda interface VPC endpoints:
 
 Lambda Logging:
 - Lambda automatically monitors Lambda functions on your behalf and sends function metrics to Amazon CloudWatch.
-- Lambda sets a CloudWatch Logs log group and a log stream for each instance of your function. 
+- Lambda sets a CloudWatch Logs log group and a log stream for each instance of your function. Permissions required: CreateLogGroup, CreateLogStream, and PutLogEvents.
 - All output (stdout & stderr) from you function is sent to the log stream.
 
 Lambda@Edge:
