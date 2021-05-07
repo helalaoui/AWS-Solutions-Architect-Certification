@@ -177,6 +177,7 @@ AWS Config:
 - Rules: 
 	- evaluation of recorded configurations against desired configurations.
 	- AWS managed rules: predefined, customizable rules that AWS Config uses to evaluate whether your AWS resources comply with common best practices. 
+	- Example of AWS Config Managed Rule: checks that all EBS volumes are encrypted.
 	- Custom rules: you need to develop an AWS Lambda function, which contains the logic that evaluates whether your AWS resources comply with the rule. 
 - Notification:
 	- Configuration changes that deviate from your rules automatically trigger SNS notifications and Amazon CloudWatch events.

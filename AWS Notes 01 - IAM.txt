@@ -170,10 +170,28 @@ Cross-Account Access:
 	- In order to allow a user in the trusted account to assume this role in the trusting account:
 		- In the trusting account: the trusted user or the whole trusted account is granted the permission to assume this role.
 		- In the trusted account: a policy must allow your user to assume that role in the trusting account.
+	- You can optionally use an ExternalID string in the trust policy to avoid the confused deputy problem (see below).
 - Using Resource-based policies for Cross-account access:
 	- Supported only for some AWS services like S3, SNS and SQS.
 	- You define a resource-based policy in the target resource in the trusting account: used only to set a maximum limit of the access you grant to the trusted account.
 	- You add the permissions also in the trusted account for the user to perform the actions on the target resource.
+
+The Confused Deputy Problem:
+- Scenario: 
+	- You contracted another account (deputy) to access your account.
+	- The deputy is contracted by many other AWS customers.
+	- You create a role that can be assumed by the deputy to provide him access to your resources.
+	- You provide the role ARN to the deputy so that he can assume it when needed.
+- Problem:
+	- A 3rd party account contracts your deputy for his services.
+	- The 3rd party guesses your role ARN and provides it to the deputy as if it was their role ARN.
+	- The 3rd party instructs the deputy to act on their account.
+	- Since they have confused the deputy, he will act on your account instead.
+- Solution:
+	- The deputy generates an ExternalID string that is unique for each one of his customers.
+	- The deputy provides you your unique ExternalID.
+	- You add a Condition element to the trust policy of your role. The Condition tests on the sts:ExternalID to check if it matches your unique ExternalID provided by the deputy.
+	- The deputy needs to provide both your role ARN and your unique ExternalID when assuming your role.
 
 ===========================
 
