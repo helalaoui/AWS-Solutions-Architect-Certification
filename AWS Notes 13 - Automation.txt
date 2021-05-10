@@ -11,10 +11,6 @@
 = 	By: Hicham El Alaoui
 =	Email: alaoui@rocketmail.com
 = 	Date: Mar-2021
-= Last Modified:
-= 	By: Hicham El Alaoui
-=	Email: alaoui@rocketmail.com
-= 	Date: 29-Apr-2021
 =
 = Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
 = 
@@ -164,6 +160,10 @@ AWS Systems Manager (formerly known as SSM):
 	- You can store values as plain text or encrypted data using a KMS CMK (SecureString parameter type).
 	- Parameters are retrieved using the GetParameter API call to ssm.{region}.amazonaws.com.
 	- The parameters hierarchy is similar to a file path.
+	- You can choose to encrypt your SecureString parameters using either:
+		- a customer-managed KMS key: all users within the customer account have access to the default AWS managed key. 
+		- or the default AWS-managed KMS key: you need to add an IAM permission to the user to use KMS operations on this KMS key.
+	- You can use AWS CloudTrail to monitor SecureString parameter activities. 
 - SSM Inventory:
 	- Collects metadata from your instances: OS, applications, files, network, …etc.
 	- You can also collect custom inventory metadata.

@@ -11,10 +11,6 @@
 = 	By: Hicham El Alaoui
 =	Email: alaoui@rocketmail.com
 = 	Date: Mar-2021
-= Last Modified:
-= 	By: Hicham El Alaoui
-=	Email: alaoui@rocketmail.com
-= 	Date: 29-Apr-2021
 =
 = Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
 = 
@@ -60,7 +56,6 @@ AWS Key Management Service (KMS):
 - You can also import keys from your own key management infrastructure or use keys stored in your AWS CloudHSM cluster (custom key store). In both cases, only symmetric keys are supported. 
 - Enforces permissions to use keys using AWS IAM.
 - KMS keys management is a multi-tenant infrastructure (FIPS level 2). If you require a dedicated infrastructure (FIPS Level 3), use a custom key store (backed with a CloudHSM cluster).
-- You can choose automatic rotation of symmetric master keys generated in AWS KMS once per year without the need to re-encrypt previously encrypted data. The service automatically keeps older versions of the master key available to decrypt previously encrypted data. 
 - In KMS, a master key is called Customer Master Key (CMK).
 
 Custom Key Store:
@@ -104,6 +99,32 @@ AWS managed CMKs:
 AWS owned CMKs:
 - a collection of CMKs that an AWS service owns and manages for use in multiple AWS accounts. 
 - You cannot view or use them.
+
+Key Material:
+- Key Material: the 256-bit key that is included in a CMK and used to encrypt and decrypt data.
+- By default, KMS generates the key material for the CMK you create.
+- But you can create a CMK without key material and then import your own key material into that CMK, a feature often known as "bring your own key" (BYOK). 
+- Importing Key Material:
+	- Supported only for symmetric CMKs in AWS KMS key stores. It is not supported on asymmetric CMKs or CMKs in custom key stores. 
+	- You cannot enable automatic key rotation for a CMK with imported key material. However, you can manually rotate a CMK with imported key material. 
+	- Importing the same key material to two different CMKs does not make them identical CMKs.
+
+Key Rotation:
+- To create new cryptographic material for your CMK, you can do either manual or automatic rotation of the CMK.
+- Automatic Rotation:
+	- Supported only on symmetric customer-managed CMKs.
+	- Rotation is done once per year without the need to re-encrypt previously encrypted data.
+	- The properties of the CMK, including its key ID, key ARN, region, policies, and permissions, do not change when the key is rotated.
+	- The service automatically keeps older versions of the master key available to decrypt previously encrypted data. 
+- Manual Rotation:
+	- You create a new CMK and then change your applications or aliases to use the new CMK.
+	- The new CMK has as a different key ID and ARN.
+	- You can use a KMS alias to refer to a CMK in your applications. You then need to only update the KMS alias when rotating the CMK.
+	- Use cases: 
+		- Control the key rotation schedule
+		- Rotate CMKs that are not eligible for automatic key rotation: asymmetric CMKs, CMKs in custom key stores, and CMKs with imported key material.
+	- You should keep the original CMK enabled: when decrypting data, KMS identifies the CMK that was used to encrypt the data, and it uses the same CMK to decrypt the data. 
+
 
 Data keys: 
 - Used to encrypt data locally in the AWS service or in your application. 

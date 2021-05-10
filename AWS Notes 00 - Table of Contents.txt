@@ -1,0 +1,190 @@
+===============================================
+===============================================
+=
+=			AWS 
+= Certified Solutions Architect - Professional 
+=	SAP-C01 Exam Study Notes
+=
+= 	*** Note 00: Table of Contents ***
+=
+= Created:
+= 	By: Hicham El Alaoui
+=	Email: alaoui@rocketmail.com
+= 	Date: May-2021
+=
+= Source: https://github.com/helalaoui/AWS-Solutions-Architect-Certification
+= 
+===============================================
+===============================================
+
+Note 01 - IAM:
+	- Identity and Access Management (IAM)
+	- IAM Identity Federation
+	- Single Sign-On (AWS SSO)
+	- Directory Service
+	- Cognito
+	- Cloud Directory
+
+AWS Notes 02 - Monitoring:
+	- CloudTrail
+	- CloudWatch
+	- CloudWatch Logs
+	- CloudWatch Events
+	- X-Ray
+	- AWS Config
+	- Trusted Advisor
+	- Personal Health Dashboard (PHD)
+	- Account Audits
+
+AWS Notes 03 - Compute:
+	- EC2
+	- Lambda
+	- WaveLength
+	- Elastic Container Services (ECS)
+	- Elastic Kubernetes Services (EKS)
+	- Fargate
+	- Elastic Beanstalk
+	- Batch
+	- Outposts
+	- vmware Cloud on AWS
+	- Lightsail
+	- Amplify
+
+AWS Notes 04 - Storage:
+	- Elastic Block Store (EBS)
+	- Elastic File Store (EFS)
+	- FSx for Windows
+	- FSx for Lustre
+	- Workdocs
+	- S3
+	- Backup
+	- Data Lifecycle Manager (DLM)
+	- Storage Gateway
+	- Data Sync
+
+AWS Notes 05 - Network:
+	- Virtual Private Cloud (VPC)
+	- IP Addressing
+	- DHCP
+	- DNS
+	- DNS Private Zone
+	- Elastic Network Interfaces
+	- Security Groups
+	- Network ACL
+	- Route Tables
+	- Prefix Lists
+	- Internet Gateway
+	- Egress-only Internet Gateway
+	- NAT Gateway
+	- NAT Instances
+	- VPC Endpoints
+	- Virtual Private Gateway (VGW)
+	- Transit Gateway (TGW)
+	- Direct Connect (DX)
+	- VPC Flow Logs
+	- Traffic Mirroring
+
+AWS Notes 06 - Databases:
+	- Relational Database Service (RDS)
+	- Amazon Aurora
+	- DynamoDB
+	- ElastiCache for Memcached
+	- ElastiCache for Redis
+	- RedShift
+	- Redshift Spectrum
+	- Neptune
+	- DocumentDB
+
+AWS Notes 07 - Migration:
+	- The 7 Rs of application migration
+	- Application Discovery Service
+	- Server Migration Service (SMS)
+	- CloudEndure Migration
+	- Database Migration Service (DMS)
+	- Migration Hub
+	- AWS Transfer Family
+	- DataSync
+	- Snowball
+	- Snowcone
+	- Snowmobile
+
+AWS Notes 08 - Queues & Buses:
+	- Simple Queue Service (SQS)
+	- Simple Notification Service (SNS)
+	- Amazon MQ
+	- EventBridge
+
+AWS Notes 09 - Analytics:
+	- Kinesis Data Streams
+	- Kinesis Data Firehose
+	- Kinesis Data Analytics
+	- Kinesis Video Streams
+	- Athena
+	- Glue
+	- Elasticsearch Service (Amazon ES)
+	- Amazon Elastic MapReduce (EMR)
+	- QuickSight
+	- AppSync
+	- Data Pipeline
+
+AWS Notes 10 - Application Routing:
+	- Elastic Load Balancer (ELB)
+	- API Gateway
+	- Route 53
+	- CloudFront
+
+AWS Notes 11 - Cryptography:
+	- CloudHSM
+	- KMS
+	- AWS Certificate Manager (ACM)
+	- Secrets Manager
+
+AWS Notes 12 - Security:
+	- Network Firewall
+	- Shield
+	- WAF
+	- Firewall Manager
+	- Inspector
+	- GuardDuty
+	- Detective
+	- Macie
+	- Security Hub
+
+AWS Notes 13 - Automation:
+	- CloudFormation
+	- Serverless Application Model (SAM)
+	- OpsWorks
+	- Step Functions
+	- Simple Workflow Service (SWF)
+	- Systems Manager (SSM)
+
+AWS Notes 14 - Governance & Architecture:
+	- AWS Well-Architected Framework
+	- AWS Organizations
+	- Service Control Policies (SCPs)
+	- Service Catalog
+	- AWS Control Tower
+	- AWS Resource Access Manager (AWS RAM)
+	- Artifacts
+
+AWS Notes 15 - DevOps:
+	- AWS Signer
+	- CodeCommit
+	- CodeGuru Reviewer
+	- CodeBuild
+	- CodeDeploy
+	- CodePipeline
+	- AppConfig
+
+AWS Notes 16 - IoT:
+	- FreeRTOS
+	- AWS IoT Greengrass
+	- AWS IoT Device Tester
+	- AWS IoT Device SDKs
+	- AWS IoT Core
+	- AWS IoT Device Mgmt
+	- AWS IoT Device Defender
+	- AWS Hot Things Graph
+	- AWS IoT Analytics
+	- AWS IoT SiteWise
+	- AWS IoT Events
