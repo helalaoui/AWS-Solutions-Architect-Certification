@@ -56,7 +56,7 @@ CloudFormation:
 	- Direct Changes: used for quick changes.
 	- Change Set: used for more complex changes and when you want to review the changes before applying them. A change set is saved.
 - Stack drifting:
-	- CloudFromation can detect drifted configurations: resources that have been changed from outside CloudFormation and do not match therefore the template.
+	- CloudFromation can detect drifted configurations: resources that have been changed from outside CloudFormation and therefore do not match the template anymore.
 	- Not supported on all resources.
 	- The execution of a stack drifting search is launched manually.
 - StackSets:
@@ -161,8 +161,8 @@ AWS Systems Manager (formerly known as SSM):
 	- Parameters are retrieved using the GetParameter API call to ssm.{region}.amazonaws.com.
 	- The parameters hierarchy is similar to a file path.
 	- You can choose to encrypt your SecureString parameters using either:
-		- a customer-managed KMS key: all users within the customer account have access to the default AWS managed key. 
-		- or the default AWS-managed KMS key: you need to add an IAM permission to the user to use KMS operations on this KMS key.
+		- your own customer-managed KMS CMK: you need to add an IAM permission to the user to use KMS operations on this KMS key.
+		- or the default AWS-managed KMS CMK that SSM create for you in your account: all users within the account have access to this key, unless explicitly denied.
 	- You can use AWS CloudTrail to monitor SecureString parameter activities. 
 - SSM Inventory:
 	- Collects metadata from your instances: OS, applications, files, network, …etc.
@@ -183,7 +183,7 @@ AWS Systems Manager (formerly known as SSM):
 	- Session document: Session Manager uses session documents to determine which type of session to start.
 	- CloudFormation document: you can choose to store your AWS CloudFormation templates in SSM.
 - SSM Patch Manager:
-	- You can use Patch Manager to apply patches for both operating systems and applications.
+	- You can use Patch Manager to apply patches for operating systems and for applications.
 	- Patch Manager uses patch baselines, which include rules for auto-approving patches within days of their release, as well as a list of approved and rejected patches.
 	- Can target individual instances or a group of instances. Can target instances having specific tags.
 	- Can scan your instances and report compliance on a schedule, install available patches on a schedule, and patch or scan instances on demand whenever you need to. 

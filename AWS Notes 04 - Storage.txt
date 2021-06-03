@@ -292,6 +292,7 @@ S3 Bucket access URL:
 	- Each access point enforces distinct permissions and network controls.
 	- You can create multiple access points for a single bucket to manage access policies in different use cases instead of a single bucket policy that spans dozens or hundreds of use cases.
 	- supports only virtual-host-style addressing.
+	- Can be either accessed from Internet ("NetworkOrigin": "Internet") or from a VPC ("NetworkOrigin": "VPC" and you specify the VPC ID).
 - S3://
 	- Some AWS services require specifying an Amazon S3 bucket using the S3:// notation.
 	- Format: s3://{bucket-name}/{key-name}
@@ -345,7 +346,7 @@ SSE-KMS:
 - S3 uses AWS KMS customer master keys (CMKs) to encrypt your Amazon S3 objects. 
 - Encrypts only the object data. Any object metadata is not encrypted. 
 - When you use SSE-KMS encryption with an S3 bucket, the AWS KMS CMK must be in the same Region as the bucket. 
-- You can use the default AWS managed CMK, or you can specify a customer managed CMK that you have already created. 
+- You can use the default AWS-managed CMK, or you can specify a customer-managed CMK that you have already created. 
 - Users who have access to a bucket will not see the encrypted files if they do not have permissions to use the encryption key in KMS. So you need to manage the key permissions in KMS even if the key is an AWS-managed CMK.
 
 SSE-C:
@@ -362,7 +363,7 @@ Hosting a static website on S3:
 
 CORS in S3:
 - About the CORS standard in general:
-	- The same-origin policy is a browser security policy that restricts on-page scripts from accessing or posting data to resources from a different host, on a different port, or with a different protocol than the current page. 
+	- The same-origin policy is a browser security policy that restricts on-page scripts from accessing or posting data to resources from a different host, on a different port, or with a different protocol than the current page. These resources are called "Cross-Origin Resources".
 	- The HTML document itself can access cross-origin resources. However, scripts cannot access cross-origin resources. This is because a script could send data while accessing a cross-origin resource.
 	- CORS, or Cross Origin Resource Sharing, is a method of accessing cross-origin resources safely. 
 	- With CORS, the browser first does a preflight OPTIONS request on the target server to check if the server accepts CORS. Then the browser sends the actual request with proper CORS headers. 
@@ -392,7 +393,7 @@ S3 Batch Operations:
 
 S3 Object Lock:
 - Blocks object version deletion during a customer-defined retention period so that you can enforce retention policies as an added layer of data protection or for regulatory compliance.
-- If a user attempts to delete an object before its Retain Until Date has passed, the operation will be denied.
+- If a user attempts to delete an object before its "Retain Until Date" has passed, the operation will be denied.
 - Two modes for locking in S3:
 	- Governance Mode: specific IAM permissions are able to remove the lock.
 	- Compliance Mode: lock protection cannot be removed by any user, including root.
@@ -454,26 +455,26 @@ Storage Services feature summary:
 - Data Consistency:
 	- EBS: 	Strong.
 	- EFS: 	Strong (close-to-open consistency).
-	- S3: 		Strong (Strong consistency since 01-Dec-2020. Eventually consistent before that).
+	- S3: 	Strong (Strong consistency since 01-Dec-2020. Eventually consistent before that).
 - In-Region Data High Availability:
 	- EBS: 	data replicated synchronously inside the AZ. Automatic failover.
 	- EFS: 	data replicated synchronously to another AZ. Multi-AZ=active-active AZ. Single-AZ=active-passive AZ.
-	- FSx: 		data replicated synchronously to another AZ. Multi-AZ=active-active AZ. Single-AZ=active-passive AZ.
-	- S3: 		data replicated synchronously across 3 AZs at least.
+	- FSx: 	data replicated synchronously to another AZ. Multi-AZ=active-active AZ. Single-AZ=active-passive AZ.
+	- S3: 	data replicated synchronously across 3 AZs at least.
 - Cross-Region Data High Availability:
 	- EBS: 	cross-region backup and restore.
 	- EFS: 	use DataSync for EFS-to-EFS replication.
-	- S3: 		Asynchronous replication with CRR.
+	- S3: 	Asynchronous replication with CRR.
 - Storage classes:
-	- EBS:		P-IOPS, GP-SSD, HDD Hot, HDD Cold.
+	- EBS:	P-IOPS, GP-SSD, HDD Hot, HDD Cold.
 	- EFS: 	Standard, IA.
-	- FSx: 		HDD, SSD.
-	- S3: 		Standard, Standard-RRS, Standard-IA, One-Zone IA, Glacier, Glacier Deep Archive, Intelligent Tiering.
+	- FSx: 	HDD, SSD.
+	- S3: 	Standard, Standard-RRS, Standard-IA, One-Zone IA, Glacier, Glacier Deep Archive, Intelligent Tiering.
 - Access Protocol:
 	- EBS: 	disk volume attach (iSCSI).
 	- EFS: 	NFS v4.
-	- FSx: 		SMB.
-	- S3: 		HTTP.
+	- FSx: 	SMB.
+	- S3: 	HTTP(S).
 
 ==================================
 

@@ -58,6 +58,14 @@ AWS Key Management Service (KMS):
 - KMS keys management is a multi-tenant infrastructure (FIPS level 2). If you require a dedicated infrastructure (FIPS Level 3), use a custom key store (backed with a CloudHSM cluster).
 - In KMS, a master key is called Customer Master Key (CMK).
 
+Customer Master Keys (CMKs):
+- CMK is a logical representation of a master key. The CMK includes metadata, such as the key ID, creation date, description, and key state. 
+- You can use AWS KMS APIs directly to encrypt and decrypt data using your CMKs stored in the service (up to 4 KB of data per API call).
+- Can be Symmetric or Asymmetric.
+- Symmetric Keys cannot be exported.
+- For Asymmetric keys, only the public key can be exported.
+- Key identifiers (Key IDs) act as names for your CMKs.
+
 Custom Key Store:
 - KMS provides the option for you to create your own key store using HSMs that you own and manage (FIPS 140-2 Level 3 certified).
 - Each custom key store is backed by an AWS CloudHSM cluster. 
@@ -75,14 +83,6 @@ Symmetric vs Asymmetric:
 - An asymmetric CMK represents either:
 	- an RSA key pair that is used for encryption and decryption or signing and verification (but not both),
 	- an Elliptic Curve (ECC) key pair that is used for signing and verification. 
-
-Customer Master Keys (CMKs):
-- CMK is a logical representation of a master key. The CMK includes metadata, such as the key ID, creation date, description, and key state. 
-- You can use AWS KMS APIs directly to encrypt and decrypt data using your CMKs stored in the service (up to 4 KB of data per API call).
-- Can be Symmetric or Asymmetric.
-- Symmetric Keys cannot be exported.
-- For Asymmetric keys, only the public key can be exported.
-- Key identifiers (Key IDs) act as names for your CMKs.
 
 Customer managed CMKs: 
 - You have full control over the management of your keys, including the ability to share access to keys across accounts or services.
@@ -134,7 +134,7 @@ Data keys:
 - Can be symmetric (data key) or asymmetric (data key pair).
 - Data keys used by AWS Services:
 	- Some AWS services (like S3) encrypt your data and store an encrypted copy of the data key along with the encrypted data.
-	-  When the service needs to decrypt your data, it requests AWS KMS to decrypt the data key using your CMK.
+	- When the service needs to decrypt your data, it requests AWS KMS to decrypt the data key using your CMK.
 	- If the user requesting data from the AWS service is authorized to decrypt under your CMK, the AWS service will receive the decrypted data key from AWS KMS. The AWS service then decrypts your data and returns it in plaintext. 
 
 CMK Authorization:

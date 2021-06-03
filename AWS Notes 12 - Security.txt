@@ -47,8 +47,8 @@ AWS Shield:
 
 AWS WAF:
 - Web Application Firewall for CloudFront, API Gateway, Application Load Balancer, or AppSync GraphQL API. 
-- Web ACL: a set of rules to protect your AWS resources.
-- Each rule requires one top-level statement, which might contain nested statements at any depth, depending on the rule and statement type. 
+- Web ACL: a set of rules in AWS WAF to protect your AWS resources.
+- Each rule requires at least one top-level statement, which might contain nested statements at any depth, depending on the rule and statement type. 
 - Statements can be combined using AND, OR or NOT.
 - Examples of criteria in the statements:
 	- Scripts or SQL code that are likely to be malicious, like cross-site scripting (XSS) or SQL injection.
@@ -102,7 +102,7 @@ Amazon GuardDuty
 	- VPC Flow Logs, 
 	- CloudTrain Event Logs.
 	- CloudTrail management Events,
-	- Cloudtrail S3 Data Event,
+	- CloudTrail S3 Data Event,
 	- DNS logs. 
 - Uses threat intelligence feeds, such as lists of malicious IP addresses and domains, and machine learning to identify unexpected and potentially unauthorized and malicious activity within your AWS environment. 
 - This can include issues like escalations of privileges, uses of exposed credentials, or communication with malicious IP addresses, or domains. 

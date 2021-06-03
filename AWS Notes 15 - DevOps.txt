@@ -71,8 +71,8 @@ Application Deployment strategies:
 	- Once the testing results are successful, application traffic is routed from blue to green. Green then becomes the new production.
 - Canary deployment:
 	- you deploy a new application code in a small part of the production infrastructure.
-	- Only a few users are routed to it. This is why it is called Canary deployment as it refers to the canary birds used by miners to detect toxic gaz. It's actually testing on real users.
-	- Users are selected carefully: low impact users or users that are ready to share feedback. 
+	- Only a few users are routed to it. This is why it is called Canary deployment as it refers to the canary birds used by miners to detect toxic gaz. This is actually testing on real users.
+	- Users are usually selected carefully: low impact users or users that are ready to share feedback. 
 	- If no errors reported, the new version can gradually roll out to the rest of the infrastructure.
 - Rolling deployment:
 	- an application’s new version gradually replaces the old one.

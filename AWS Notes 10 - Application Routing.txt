@@ -69,7 +69,7 @@ Application Load Balancer (ALB or ELBv2):
 	- You can specify additional certificates in a certificate list.
 	- Supports Server Name Indication (SNI).
 	- Supports end-to-end encryption: traffic is re-encrypted between the ALB and the instances.
-	- Certificates can be stored in ACM or IAM.
+	- Certificates can be stored in AWS ACM or AWS IAM.
 - Pricing based on hours and number of Loadbalancer Capacity Units (LCUs) used per hour.
 
 
@@ -174,7 +174,7 @@ API Gateway:
 - Supported API types: REST, HTTP, and WebSocket.
 - Authentication mechanisms:
 	- AWS IAM policies,
-	- Lambda authorizer function (takes the caller's identity as input and returns an IAM policy as output),
+	- Lambda authorizer function. Also called Custom Authorizer. Takes the caller's identity as input and returns an IAM policy as output.
 	- Amazon Cognito user pools.
 	- OIDC and OAuth 2.0 (HTTP APIs only). 
 - Supports CORS.
@@ -215,21 +215,32 @@ Route 53:
 - Two types of zones: 
 	- Public hosted zone: visible on internet.
 	- Private hosted zone: used only from within your VPCs. You need to enable « DNS Resolution » and « DNS Hostnames » on the VPC.
-- Refer to the VPC notes for more information about the public and private hosted zones.
+- Refer to the VPC notes for more information about private hosted zones.
 - You can associate any DNS record type except SOA and NS records.
 
 Route 53 Records:
-- Can be traditional (non-alias) DNS records or AWS alias records.
-- To build routing policies you create multiple records of the same name and type and pointing to different IP addresses. Eg: { [ myrecordname => IP1, policy=weighted, weight=40 ], [ myrecordname => IP2, policy=weighted, weight=60 ] }.
+- Can be standard DNS records or Route 53 "Alias" records.
+- To build routing policies you create multiple records of the same name and type and pointing to different IP addresses. Eg: [ { myrecordname=IP1, policy=weighted, weight=40 }, { myrecordname=IP2, policy=weighted, weight=60 } ].
 - You create a DNS record and then associate a health check with this record. 
 - Records without a health check are assumed always healthy.
 - Unhealthy records are removed from the routing algorithm.
 
-Route 53 Alias Records:
+DNS standard record types:
+- A: IPv4 address for a DNS name.
+- AAAA: IPv6 address for a DNS name.
+- CNAME: Alias (Canonical name)
+- MX: email
+- TXT
+- SRV
+- SPF: Sender Policy Framework: IP address of email gateway to avoid spoofing.
+- NS: name server record.
+- SOA: Start of authority.
+
+Route 53 "Alias" Records:
 - Provide a Route 53-specific extension to DNS functionality. 
-- Points either to:
-	- an AWS Service, such as CloudFront, S3, ELB, API Gateway, VPC interface endpoint, …etc.
-	- another record. Enables you to build complex trees of routing rules.
+- Points either:
+	- to an AWS Service, such as CloudFront, S3, ELB, API Gateway, VPC interface endpoint, …etc.
+	- to another record. Enables you to build complex trees of routing rules.
 - Target IPs are automatically maintained by Route 53.
 - "Evaluate Target Health" option:
 	- Indicates whether Route 53 should check the health of the target resource that this alias points to.
@@ -291,30 +302,19 @@ Route 53 Traffic Flow:
 
 Route 53 Resolver:
 - When you create a VPC, Route 53 Resolver automatically answers DNS queries for local VPC domain names for EC2 instances and for records in private hosted zones.
-- You also can integrate DNS resolution between the Route 53 Resolver and your DNS resolvers on your network by configuring forwarding rules.
-- Your "network" here can include: your VPC, peered VPCs, your on-premises networks connected via S2S VPN or Direct Connect.
+- You can also integrate DNS resolution between the Route 53 Resolver and your DNS resolvers on "your network" by configuring forwarding rules.
+- "Your network" here can include: your VPC, peered VPCs, your on-premises networks connected via S2S VPN or Direct Connect.
 - Two use cases: inbound DNS requests and outbound DNS requests.
 - Inbound DNS requests:
 	- You create an "Inbound endpoint": DNS resolvers on your network can forward DNS queries to the Route 53 Resolver via this endpoint.
 	- This allows your DNS resolvers to easily resolve domain names for AWS resources such as EC2 instances or records in a Route 53 private hosted zone. 
 - Outbound DNS requests:
-	- You create an "Outbound endpoint": Resolver conditionally forwards queries to resolvers on your network via this endpoint.
+	- You create an "Outbound endpoint": the Route 53 Resolver conditionally forwards queries to DNS resolvers on your network via this endpoint.
 	- You create Resolver rules that specify the domain names for the DNS queries that you want to forward, and the IP addresses of the DNS resolvers on your network that you want to forward the queries to. 
 	- If a query matches multiple rules, Resolver chooses the rule with the most specific match.
 	- You can also forward queries for amazonaws.com to your network. This rule will not apply to all amazonaws.com subdomains.
 - For each endpoint, Resolver automatically creates a VPC elastic network interface with an IP address that you specify.
 - Like Amazon VPC, Resolver is regional. 
-
-DNS standard record types:
-- A: IPv4 address for a DNS name.
-- AAAA: IPv6 address for a DNS name.
-- CNAME: Alias (Canonical name)
-- MX: email
-- TXT
-- SRV
-- SPF: Sender Policy Framework: IP address of email gateway to avoid spoofing.
-- NS: name server record.
-- SOA: Start of authority.
 
 ===============================
 

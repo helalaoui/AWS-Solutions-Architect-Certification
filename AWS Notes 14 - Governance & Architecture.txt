@@ -65,14 +65,14 @@ AWS Organizations:
 - Free service.
 
 Service Control Policies (SCPs): 
-- Specify the maximum permissions for member OUs or accounts in the organization.
-- No permissions are granted by an SCP. An SCP defines a guardrail, or sets limits, on the actions that the account's administrator can delegate to the IAM users and roles in the affected accounts. 
-- The administrator must still attach identity-based or resource-based policies to IAM users or roles, or to the resources in your accounts to actually grant permissions. 
-- The effective permissions are the logical intersection between what is allowed by the SCP and what is allowed by the IAM and resource-based policies. 
 - An SCP restricts permissions for IAM users and roles in member accounts, including the member account's root user.
+- An SCP Specifies the maximum permissions for member OUs or accounts in an organization.
+- No permissions are granted by an SCP. An SCP defines a guardrail, or sets limits, on the actions that a the administrator of a member account can delegate to the IAM users and roles of this member account. 
+- The administrator of the member account must still attach identity-based or resource-based policies to IAM users or roles, or to the resources in your accounts to actually grant permissions. 
+- The effective permissions are the logical intersection between what is allowed by the SCP and what is allowed by the IAM and resource-based policies. 
 - An SCP can be configured either as:
-	- A deny list – actions are allowed by default, and you specify what services and actions are prohibited
-	- An allow list – actions are prohibited by default, and you specify what services and actions are allowed
+	- A deny list: all actions are allowed by default, and you specify what services and actions are prohibited
+	- An allow list: all actions are prohibited by default, and you specify what services and actions are allowed
 - By default, AWS Organizations attaches an AWS managed SCP named FullAWSAccess to the organization's root and every OU and account when it's created: by default all permissions are allowed.
 - SCPs do NOT affect:
 	- Users or roles in the management account. 

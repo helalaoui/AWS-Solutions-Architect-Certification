@@ -121,9 +121,9 @@ Amazon EventBridge:
 =========================================
 
 Push/Pull Mecanism Comparison:
-- SNS:			push-push.
+- SNS:		push-push.
 - SQS: 		push-pull.
-- MQ:			push-pull.
+- MQ:		push-pull.
 - EventBridge:	push-push.
 
 

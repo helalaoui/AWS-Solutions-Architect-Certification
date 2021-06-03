@@ -303,7 +303,7 @@ DynamoDB Transactions:
 - You can group multiple actions together and submit them as a single all-or-nothing.
 - Idempotency: You can optionally include a client token when you make a TransactWriteItems call to ensure that the request is idempotent.
 - Making your transactions idempotent helps prevent application errors if the same operation is submitted multiple times due to a connection time-out or other connectivity issue. 
-- Transations in Global Tables:
+- Transactions in Global Tables:
 	- Provide atomicity, consistency, isolation, and durability (ACID) guarantees only within the region where the write is made originally.
 	- Are not supported across regions in global tables.
 
@@ -355,19 +355,19 @@ NoSQL Workbench:
 AWS Database features summary:
 In Region Data availability:
 	- RDS: 		multi-AZ = 2 synchronous copies and 2 instances in 2 AZs. Automatic Failover.
-	- Aurora : 		6 synchronous copies and up to 16 instances in 3 AZs. Automatic Failover.
+	- Aurora : 	6 synchronous copies and up to 16 instances in 3 AZs. Automatic Failover.
 	- DynamoDB: 	3 synchronous copies in 3 AZs. Automatic Failover.
 Cross-Region Data availability:
 	- RDS: 		Read Replicas. Up to 5 Asynchronous Read Replicas. Manual Failover.
-	- Aurora: 		Global Database = Up to 5 Asynchronous read-only secondary DB clusters in different Regions. RPO = 1 sec. RTO = 1mn. Manual Failover.
+	- Aurora: 	Global Database = Up to 5 Asynchronous read-only secondary DB clusters in different Regions. RPO = 1 sec. RTO = 1mn. Manual Failover.
 	- DynamoDB: 	Global Tables = multiple read/write replica tables (one per Region). Eventually consistent. RPO = 1 sec. Automatic Failover can be implemented in the application logic.
 Authentication:
 	- RDS: 		SQL Password, AWS IAM (MySQL & PostgreSQL), Kerberos.
-	- Aurora: 		SQL Password, AWS IAM, Kerberos.
+	- Aurora: 	SQL Password, AWS IAM, Kerberos.
 	- DynamoDB: 	AWS IAM.
 Notifications:
 	- RDS: 		SNS.
-	- Aurora: 		SNS.
+	- Aurora: 	SNS.
 	- DynamoDB: 	Kinesis Data Streams or Lambda triggers.
 
 Performance: RDS vs DynamoDB:
@@ -425,7 +425,7 @@ Redis:
 ============================
 
 Amazon RedShift:
-- Fully managed petabyte-scale relation data warehouse service.
+- Fully managed petabyte-scale relational data warehouse service.
 - HDD and SSD platforms.
 - Wide integrations with existing tools.
 - Architecture:

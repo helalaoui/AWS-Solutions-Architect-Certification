@@ -18,10 +18,10 @@
 ===============================================
 
 Kinesis Stream family:
-- Kinesis Video Streams: Capture, process, and store video streams for analytics and machine learning.
 - Kinesis Data Streams: Build custom applications that analyze data streams using popular stream-processing frameworks.
 - Kinesis Data Firehose: Load data streams into data stores.
 - Kinesis Data Analytics: Process and analyze streaming data using SQL or Java.
+- Kinesis Video Streams: Capture, process, and store video streams for analytics and machine learning.
 
 ====================================================
 
@@ -52,7 +52,7 @@ Kinesis Data Streams:
 	- When you configure Lambda as a Consumer, the Lambda service will use one function concurrency per open shard.
 - Enhanced fan-out consumers:
 	- With this feature, each consumer gets its own 2 MB/sec allotment of read throughput, without contending for read throughput with other consumers. 
-	- Kinesis Data Streams pushes the records to you over HTTP/2 using SubscribeToShard. 
+	- Kinesis Data Streams can push the records to you over HTTP/2 using SubscribeToShard. 
 	- There is a data retrieval cost and a consumer-shard hour cost. 
 - If you need to send stream records directly to services such as S3, Redshift or Splunk, it’s better to use Kinesis Data Firehose.
 - Supports Server Side Encryption using AWS KMS.

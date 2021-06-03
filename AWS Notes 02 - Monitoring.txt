@@ -56,11 +56,10 @@ CloudWatch:
 - If you put your own custom metrics into the repository, you can retrieve statistics on these metrics as well. 
 - The CloudWatch home page automatically displays metrics about every AWS service you use. You can additionally create custom dashboards. 
 - CloudWatch concepts: Namespaces, Metrics, Dimensions, Statistics, Percentiles, Alarms.
-- Namespaces: 
-	- a container for CloudWatch metrics. 
+- Namespace: 
+	- a container for CloudWatch metrics. Example: "AWS/EC2".
 	- Metrics in different namespaces are isolated from each other, so that metrics from different applications are not mistakenly aggregated into the same statistics. 
-	- Example of namespace: "AWS/EC2".
-- Metrics: 
+- Metric: 
 	- a time-ordered set of data points that are published to CloudWatch. 
 	- Think of a metric as a variable to monitor, and the data points as representing the values of that variable over time. 
 	- Metrics exist only in the Region in which they are created. 
@@ -69,7 +68,7 @@ CloudWatch:
 	- Metrics resolution:
 		- Standard resolution: data having a one-minute granularity. All metrics produced by AWS services are standard resolution by default. 
 		- High resolution: data at a granularity of one second.
-- Dimensions:
+- Dimension:
 	- A dimension is a name/value pair that is part of the identity of a metric.
 	- You can assign up to 10 dimensions to a metric. 
 	- For example, you can get statistics for a specific EC2 instance by specifying the InstanceId dimension when you search for metrics. 
@@ -77,15 +76,15 @@ CloudWatch:
 	- Statistics are metric data aggregations over specified periods of time. 
 	- Aggregations are made using the namespace, metric name, dimensions, and the data point unit of measure, within the time period you specify. 
 	- Example of statistics functions: min, max, average, sum, percentile.
-- Percentiles:
+- Percentile:
 	- A percentile indicates the relative standing of a value in a dataset.
 	- For example, the 95th percentile means that 95 percent of the data is lower than this value and 5 percent of the data is higher than this value. 
 	- Some CloudWatch metrics support percentiles as a statistic. 
-- Alarms:
+- Alarm:
 	- Automatically initiate actions on your behalf. 
 	- An alarm watches a single metric over a specified time period, and performs one or more specified actions, based on the value of the metric relative to a threshold over time. 
 	- You can also add alarms to dashboards. 
-- Actions:
+- Action:
 	- An action can be triggered either when:
 		- the alarm goes to an "In-Alarm" state, or
 		- the alarm goes to an "OK" state, or,

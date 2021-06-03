@@ -90,7 +90,7 @@ IAM Permissions:
 - are the building blocs of policies.
 - To grant permissions to IAM entities (users and roles) you put the permissions in a policy and then attach the policy to the entity.
 - Permissions decision tree:
-	- Firsty looks for explicit denies,
+	- Firstly looks for explicit denies,
 	- Secondly looks for explicit allows,
 	- Lastly denies any action that is not explicitly allowed.
 
@@ -105,10 +105,10 @@ Policy Statement elements:
 	- Can be a whole account. Syntax: "Principal": { "AWS": "arn:aws:iam::123456789012:root" } or "Principal": { "AWS": "123456789012" }.
 	- Federated Web identiy user: "Principal": { "Federated": "graph.facebook.com" }.
 	- Federated SAML users: "Principal": { "Federated": "arn:aws:iam::AWS-account-ID:saml-provider/provider-name" }.
-- NotPrincipal: specify the IAM user, federated user, IAM role, AWS account, AWS service, or other principal that is not allowed or not denied access to a resource. 
+- NotPrincipal: Matches every principal except those specified.
 - Action: list of actions that the policy allows or denies. 
 - NotAction:
-	- explicitly matches everything except the specified list of actions. 
+	- Matches every action except those specified. 
 	- use the NotAction element in a statement with "Effect": "Allow" to provide access to all of the actions in an AWS service, except for the actions specified in NotAction. 
 	- use the NotAction element in a statement with "Effect": "Deny" to deny access to all of the listed resources except for the actions specified in the NotAction element. 
 	- The NotAction/Deny combination does not allow the listed items, but instead explicitly denies the actions not listed. You must still allow actions that you want to allow. 
@@ -136,20 +136,20 @@ Inline Policies:
 - Main use case for inline polices: you want to be sure that the permissions in a policy are not inadvertently assigned to an identity other than the one they're intended for.
 
 Managed Policies:
-- Customer Managed Policies:
+- Customer-Managed Policies:
 	- You can create standalone policies that you administer in your own AWS account, which we refer to as customer managed policies. 
 	- Have automatic versioning. IAM stores up to five versions of your customer managed policies. 
-- AWS Managed Policies:
+- AWS-Managed Policies:
 	- are designed to provide permissions for many common use cases.
 - Job Functions:
-	- A particularly useful category of AWS managed policies that are designed for job functions like Systems Administrator or Network Administrator. 
+	- A particularly useful category of AWS-managed policies that are designed for job functions like Systems Administrator or Network Administrator. 
 	- Align closely to commonly used job functions in the IT industry. 
 	- One key advantage is that they are maintained and updated by AWS as new services and API operations are introduced. 
 - The maximum number of managed policies that you can attach to a user or a group is 10. The consolidated maximum is therefore 110 managed policies per user: 10 + 10x10 (10 policies per user + 10 groups per user x 10 policies per group).
 
 Permission Boundaries:
 - A permissions boundary is an advanced feature used to set the maximum permissions that an identity-based policy can grant to an IAM entity.
-- You can use an AWS managed policy or a customer managed policy to set the boundary for an IAM entity (user or role): this policy will limit the maximum permissions for the user or role. 
+- You can use an AWS-managed policy or a customer-managed policy to set the boundary for an IAM entity (user or role): this policy will limit the maximum permissions for the user or role. 
 - When the permission boundary is attached to a user/role:
 	- He cannot change or remove it from himself or from other users.
 	- He cannot create IAM principals without this permissions boundary. This prevents privilege escalation.
@@ -164,17 +164,17 @@ Cross-Account Access:
 - Using roles for Cross-account access:
 	- You need to create a role in the trusting account that has the required permissions on the target resource.
 	- In order to allow a user in the trusted account to assume this role in the trusting account:
-		- In the trusting account: the trusted user or the whole trusted account is granted the permission to assume this role.
+		- In the trusting account: the trusted user or the whole trusted account is granted the permission to assume this role (trust policy).
 		- In the trusted account: a policy must allow your user to assume that role in the trusting account.
 	- You can optionally use an ExternalID string in the trust policy to avoid the confused deputy problem (see below).
 - Using Resource-based policies for Cross-account access:
-	- Supported only for some AWS services like S3, SNS and SQS.
+	- Supported on many AWS services like S3, SNS and SQS.
 	- You define a resource-based policy in the target resource in the trusting account: used only to set a maximum limit of the access you grant to the trusted account.
 	- You add the permissions also in the trusted account for the user to perform the actions on the target resource.
 
 The Confused Deputy Problem:
 - Scenario: 
-	- You contracted another account (deputy) to access your account.
+	- You contracted another account (deputy) to access your account and perform some service.
 	- The deputy is contracted by many other AWS customers.
 	- You create a role that can be assumed by the deputy to provide him access to your resources.
 	- You provide the role ARN to the deputy so that he can assume it when needed.
@@ -184,7 +184,7 @@ The Confused Deputy Problem:
 	- The 3rd party instructs the deputy to act on their account.
 	- Since they have confused the deputy, he will act on your account instead.
 - Solution:
-	- The deputy generates an ExternalID string that is unique for each one of his customers.
+	- The deputy generates an ExternalID string that is unique for each one of his customers. Example: External ID = Customer ID in the deputy's internal CRM.
 	- The deputy provides you your unique ExternalID.
 	- You add a Condition element to the trust policy of your role. The Condition tests on the sts:ExternalID to check if it matches your unique ExternalID provided by the deputy.
 	- The deputy needs to provide both your role ARN and your unique ExternalID when assuming your role.
@@ -219,7 +219,7 @@ IAM Identity Federation with SAML:
 
 AWS Single Sign-On (AWS SSO):
 - A cloud-based single sign-on (SSO) service focused on SSO for employees when accessing AWS services or cloud apps.
-- Identity Sources:
+- Identity Source:
 	- You can have only ONE identity source per AWS organization. 
 	- Supported identity sources:
 		- AWS SSO integrated identity store.
@@ -377,9 +377,9 @@ Active Directory  |=====> AWS SSO ======>|=========> SAML for built-in SaaS appl
 SAML              |                      |=========> SAML for custom application.
 
 Cognito User Pools Directory |
-Social IdP                   |                                |==> JSON web tokens (JWT)
+Social IdP                   |                            |==> JSON web tokens (JWT)
 OIDC                         |===> Cognito User Pools ===>|
-SAML                         |                                |==> AWS IAM Authorization (API Token from STS)
+SAML                         |                            |==> AWS IAM Authorization (API Token from STS)
 
 Cognito User Pools |
 Social IdP         |                                

@@ -29,7 +29,7 @@ CIDR block:
 - A VPC has one primary IPv4 CIDR block.
 - You can associate secondary IPv4 CIDR blocks with your VPC.
 - You cannot increase or decrease the size of an existing CIDR block.
-- In the same VPC, you cannot mix CIDR blocks between RFC 1918 ranges: 172.16.0.0/12, 10.0.0.0/8 and 192.168.0.0/16.
+- In the same VPC, you cannot mix CIDR blocks between RFC 1918 ranges: 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
 
 Subnets:
 - A subnet resides in only one Availability Zone.
@@ -43,7 +43,7 @@ Subnet type:
 
 Public Subnet:
 - Any subnet with a (default) route to an Internet Gateway (IGW).
-- If you want your instance in a public subnet to communicate with the internet, it must have a public IP address (dynamic) or an Elastic IP address (static). 
+- If you want your instance in a public subnet to communicate with the internet (through an IGW), it must have a public IP address (dynamic) or an Elastic IP address (static). 
 
 Private Subnet:
 - Does not have a route to an Internet Gateway.
@@ -79,6 +79,7 @@ Public IP Addresses:
 - The subnet has a modifiable attribute that determines whether instances launched into that subnet receive a public IP address. This attribute is:
 	- Enabled by default in a default subnet. 
 	- Disabled by default in a non-default subnet. 
+- A public IP address is mapped to the primary private IP address through network address translation (NAT) by the Internet Gateway. 
 
 Elastic IP addresses:
 - Static IPv4 public address.
@@ -86,7 +87,7 @@ Elastic IP addresses:
 - An Elastic IP address is a property of a network interface.
 - It can be associated with a single instance or network interface at a time. 
 - You're limited to five Elastic IP addresses per account. 
-- A public IP address is mapped to the primary private IP address through network address translation (NAT) by the Internet Gateway. 
+- An Elastic IP address is mapped to the primary private IP address through network address translation (NAT) by the Internet Gateway. 
 
 An Elastic IP address doesn’t incur charges as long as all the following conditions are true:
 	- The Elastic IP address is associated with an EC2 instance.
@@ -305,11 +306,11 @@ Internet Gateway (IGW):
 Egress-only Internet Gateway (EIGW):
 - Stateful egress-only IPv6-only gateway.
 - Allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances. 
-- To enable outbound-only internet communication over IPv4, use a NAT gateway instead. 
+- To enable outbound-only internet communication over IPv4, use a NAT gateway or NAT instance instead. 
 
 ============================
 
-NAT:
+Internet egress traffic from private instances:
 - For IPv4: You can use either a NAT instance or NAT Gateway.
 - For IPv6: You need to use an Egress-only Internet Gateway because IPv6 addresses are public by default.
 
@@ -345,7 +346,7 @@ NAT Instance:
 ============================
 
 VPC Endpoint (VPCE): 
-- Enables you to access an AWS service (like S3) or a VPC Endpoint Service directly from your VPC without going out through internet.
+- Enables you to access an AWS service (like S3) or a VPC Endpoint Service directly from your VPC without going out through the Internet and an Internet Gateway.
 - Lives inside a VPC,
 - VPC endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components.
 - Instances in your VPC do not require public IP addresses to communicate with resources in the service. 
@@ -358,7 +359,7 @@ AWS PrivateLink:
 - You can create your "VPC Endpoint Service" for your own application in your VPC:
 	- You configure it as an AWS PrivateLink-powered service (referred to as an endpoint service).
 	- Other AWS principals can create a connection from their VPC to your endpoint service using an interface VPC endpoint or a Gateway Load Balancer endpoint.
-	- You are the service provider, and the AWS principals that create connections to your service are service consumers. 
+	- You are the service provider. The AWS principals that create connections to your service are service consumers. 
 
 VPC Endpoint Types:
 - Interface endpoint: 
@@ -373,8 +374,9 @@ VPC Endpoint Types:
 	- Can be extended to S2S VPN and Direct Connect.
 	- Supported within the same Region only.
 	- Supports Security Groups.
+	- When you create an interface endpoint, we generate endpoint-specific DNS hostnames that you can use to communicate with the service. For example, vpce-0fe5b17a0707d6abc.ec2.us-east-1.vpce.amazonaws.com.
 	- You make requests to the service using the endpoint DNS name.
-	- Private DNS option: if enabled (default), associates a private hosted zone with your VPC, allowing you to use the normal AWS service DNS name instead of the endpoint-specific DNS name.
+	- Private DNS option: if enabled (default), associates a private hosted zone with your VPC, allowing you to use the normal AWS service DNS name (for example, ec2.us-east-1.amazonaws.com) instead of the endpoint-specific DNS name. 
 
 
 - Gateway endpoint:
@@ -513,8 +515,8 @@ Transit Gateway (TGW):
 ============================
 
 Direct Connect (DX):
-- links your internal network to an AWS Direct Connect location over a standard Ethernet fiber-optic cable.
-- One end of the cable is connected to your router, the other to an AWS Direct Connect router. 
+- links your internal network to an AWS Direct Connect location over a standard Ethernet fiber-optic cable (LX, LR or LR4).
+- One end of the cable is connected to your router or the APN partner router in DX location, the other end of the cable is connected to an AWS Direct Connect router. 
 - Physical Connection Options:
 	- Circuit between the customer premises and the DX location.
 	- Circuit between the customer premises and an SP offering DX. Particularly useful for MPLS.
@@ -527,12 +529,17 @@ Direct Connect (DX):
 	- For a single customer.
 	- Single or multiple 1G, 10G or 100G ports.
 	- Supports port aggregation with LAG (LACP) for up to 4 x 1/10G ports or 2 x 100G ports.
+	- Customers can request a dedicated connection through the AWS Direct Connect console, the CLI, or the API. 
+	- After you request the connection, we make a Letter of Authorization and Connecting Facility Assignment (LOA-CFA) available to you to download.
+	- The LOA-CFA is the authorization to connect to AWS, and is required by your network provider to order a cross connect for you. 
 - Hosted connection:
 	- Managed by an AWS partner. 
 	- The partner can share a 10G link between several customers.
 	- Starts at 50 Mbps.
-- A connection of 1 Gbps or more can be partitioned into multiple virtual interfaces (VIFs).
-- A connection of less than 1 Gbps supports only one virtual interface.
+- Virtual Interfaces (VIFs):
+	- A connection of 1 Gbps or more can be partitioned into multiple VIFs.
+	- A connection of less than 1 Gbps supports only one VIF.
+	- Each VIF is mapped to a VLAN on the 802.1Q trunk between the AWS DX router and the customer/partner router in the DX location.
 - You must create one of the following virtual interfaces to begin using your AWS Direct Connect connection:
 	- Public VIF: allows connectivity to public IP addresses in AWS over the DX instead of traversing internet: connectivity to an AWS Service, to your public AWS network or those of other AWS customers.
 	- Private VIF: access a VPC using private IP addresses.
@@ -540,11 +547,9 @@ Direct Connect (DX):
 	- Hosted VIF: To use your AWS Direct Connect connection with another AWS account, you can create a hosted virtual interface for that account. 
 
 Direct Connect Gateway (DCG): 
-- Use AWS Direct Connect gateway to connect your Direct Connect to your VPCs.
-- A Direct Connect gateway is a globally available resource. 
+- A Direct Connect gateway is a globally available resource that you use to connect your VPCs to the Private VIFs of your Direct Connect connection.
 - You can create the Direct Connect gateway in any Region and access it from all other Regions.
 - A DCG can be attached either to a VGW or a Transit Gateway (when you have multiple VPCs in the same region).
-- Uses a private virtual interface for the connection to the AWS Direct Connect location.
 
 
 To connect your AWS Direct Connect connection to your VPCs in the same or different Regions, you need to:
